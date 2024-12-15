@@ -1,0 +1,1112 @@
+.data-page-container {
+  padding: 2rem;
+  background: #f8fafc;
+}
+
+.data-header {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.data-header h2 {
+  color: #1e293b;
+  margin: 0;
+}
+
+.header-buttons {
+  display: flex;
+  gap: 1rem;
+}
+
+.table-container {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  overflow-x: auto;
+}
+
+.user-data-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  background-color: white;
+}
+
+.user-data-table th,
+.user-data-table td {
+  padding: 12px 8px;
+  text-align: left;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.user-data-table thead th {
+  background-color: #f8f9fa;
+  padding: 12px 8px;
+  border-bottom: 2px solid #dee2e6;
+  font-weight: bold;
+  text-align: left;
+}
+
+.user-data-table tbody tr:hover {
+  background-color: #f5f5f5;
+}
+
+.no-data-message {
+  text-align: center;
+  padding: 3rem;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.refresh-button,
+.excel-button {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.refresh-button {
+  background: #3b82f6;
+  color: white;
+}
+
+.refresh-button:hover {
+  background: #2563eb;
+}
+
+.excel-button {
+  background: #10b981;
+  color: white;
+}
+
+.excel-button:hover {
+  background: #059669;
+}
+
+.delete-btn {
+  padding: 0.4rem 0.8rem;
+  background-color: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.delete-btn:hover {
+  background-color: #dc2626;
+  transform: translateY(-1px);
+}
+
+.table-container::-webkit-scrollbar {
+  height: 8px;
+  width: 8px;
+}
+
+.table-container::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+.table-container::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+.table-container::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* 체크박스 스타일 */
+.select-checkbox {
+  width: 16px !important;
+  height: 16px !important;
+  cursor: pointer;
+  margin: 0;
+  padding: 0;
+}
+
+/* 삭제 버튼 스타일 */
+.delete-button {
+  padding: 0.5rem 1rem;
+  background-color: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.delete-button:hover {
+  background-color: #dc2626;
+}
+
+/* 선택된 행 스타일 */
+.user-data-table tbody tr.selected {
+  background-color: #f1f5f9;
+}
+
+/* 체크박스 셀 스타일 */
+.user-data-table th:first-child,
+.user-data-table td:first-child {
+  width: 50px !important;
+  min-width: 50px !important;
+  padding: 8px !important;
+  text-align: center !important;
+  vertical-align: middle !important;
+  background-color: inherit !important;
+}
+
+/* 체크박스 스타일 강제 적용 */
+.user-data-table input[type="checkbox"] {
+  display: inline-block !important;
+  width: 18px !important;
+  height: 18px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  position: static !important;
+  vertical-align: middle !important;
+  appearance: checkbox !important;
+  -webkit-appearance: checkbox !important;
+  -moz-appearance: checkbox !important;
+  pointer-events: auto !important;
+  cursor: pointer !important;
+}
+
+/* 체크박스 컨테이너 스타일 */
+.checkbox-cell {
+  position: relative !important;
+  z-index: 2 !important;
+  background-color: inherit !important;
+}
+
+.header-buttons {
+  display: flex;
+  gap: 8px;
+  margin: 20px 0;
+}
+
+.delete-selected-button,
+.refresh-button,
+.excel-button {
+  padding: 8px 16px;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.delete-selected-button {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+}
+
+.delete-selected-button:disabled {
+  background-color: #e9ecef;
+  cursor: not-allowed;
+}
+
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  margin-top: 1rem;
+}
+
+.user-data-table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid #ddd;
+}
+
+.select-column {
+  width: 40px;
+  min-width: 40px;
+  padding: 8px !important;
+}
+
+.checkbox-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.select-checkbox {
+  width: 16px !important;
+  height: 16px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  cursor: pointer;
+  border: 1px solid #aaa;
+  border-radius: 3px;
+}
+
+.user-data-table th,
+.user-data-table td {
+  padding: 12px 8px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.user-data-table thead th {
+  background-color: #f8f9fa;
+  font-weight: 600;
+}
+
+.user-data-table tbody tr:hover {
+  background-color: #f5f5f5;
+}
+
+/* 체크박스 스타일 재정의 */
+input[type="checkbox"].select-checkbox {
+  -webkit-appearance: checkbox !important;
+  -moz-appearance: checkbox !important;
+  appearance: checkbox !important;
+  opacity: 1 !important;
+  position: static !important;
+  pointer-events: auto !important;
+  background: white !important;
+}
+
+/* 필터 컨트롤 스타일 */
+.filter-controls {
+  display: flex;
+  gap: 16px;
+  margin: 16px 0;
+  padding: 16px;
+  background-color: #f8f9fa;
+  border-radius: 4px;
+  flex-wrap: wrap;
+}
+
+.date-filter {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.date-filter input[type="date"] {
+  padding: 6px;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+}
+
+.search-filter input {
+  padding: 6px 12px;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  width: 200px;
+}
+
+.category-filters {
+  display: flex;
+  gap: 8px;
+}
+
+.category-filters select {
+  padding: 6px;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  background-color: white;
+}
+
+/* 반응형 스타일 */
+@media (max-width: 768px) {
+  .filter-controls {
+    flex-direction: column;
+  }
+
+  .search-filter input {
+    width: 100%;
+  }
+
+  .category-filters {
+    flex-direction: column;
+  }
+}
+
+/* 정렬 가능한 헤더 스타일 */
+.sortable-header {
+  cursor: pointer;
+  user-select: none;
+  position: relative;
+  padding-right: 20px !important;
+}
+
+.sortable-header:hover {
+  background-color: #f1f3f5;
+}
+
+.sort-icon {
+  position: absolute;
+  right: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.8em;
+  color: #666;
+}
+
+/* 활성화된 정렬 상태 */
+.sortable-header.active {
+  background-color: #e9ecef;
+}
+
+.sortable-header.active .sort-icon {
+  color: #000;
+}
+
+/* 정렬 아이콘 애니메이션 */
+@keyframes sortIconFade {
+  from { opacity: 0.5; }
+  to { opacity: 1; }
+}
+
+.sort-icon {
+  animation: sortIconFade 0.2s ease-in-out;
+}
+
+/* 테이블 컨트롤 스타일 */
+.table-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.items-per-page-select {
+  padding: 6px;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  background-color: white;
+}
+
+.data-info {
+  color: #666;
+  font-size: 0.9em;
+}
+
+/* 페이지네이션 컨트롤 스타일 */
+.pagination-controls {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  margin-top: 1rem;
+  padding: 1rem;
+}
+
+.pagination-button {
+  padding: 6px 12px;
+  border: 1px solid #dee2e6;
+  background-color: white;
+  cursor: pointer;
+  border-radius: 4px;
+  min-width: 36px;
+}
+
+.pagination-button:hover:not(:disabled) {
+  background-color: #e9ecef;
+  border-color: #dee2e6;
+}
+
+.pagination-button.active {
+  background-color: #0d6efd;
+  color: white;
+  border-color: #0d6efd;
+}
+
+.pagination-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+/* 반응형 스타일 */
+@media (max-width: 768px) {
+  .table-controls {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .pagination-controls {
+    flex-wrap: wrap;
+  }
+}
+
+.backup-controls {
+  display: flex;
+  gap: 8px;
+}
+
+.backup-button,
+.restore-button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.backup-button {
+  background-color: #28a745;
+  color: white;
+}
+
+.restore-button {
+  background-color: #17a2b8;
+  color: white;
+}
+
+.backup-button:hover {
+  background-color: #218838;
+}
+
+.restore-button:hover {
+  background-color: #138496;
+}
+
+/* 다크 모드 */
+@media (prefers-color-scheme: dark) {
+  .backup-button,
+  .restore-button {
+    opacity: 0.9;
+  }
+  
+  .backup-button:hover,
+  .restore-button:hover {
+    opacity: 1;
+  }
+}
+
+/* 테이블 컨테이너 */
+.table-wrapper {
+  overflow: auto;
+  margin: 1rem 0;
+  background: white;
+  border: 1px solid #e9ecef;
+  border-radius: 4px;
+}
+
+/* 테이블 기본 스타일 */
+.user-data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+/* 테이블 헤더 */
+.user-data-table thead {
+  background: #f8f9fa;
+}
+
+.user-data-table th {
+  padding: 12px 16px;
+  text-align: left;
+  font-weight: 600;
+  color: #495057;
+  border-bottom: 2px solid #dee2e6;
+  white-space: nowrap;
+}
+
+/* 테이블 셀 */
+.user-data-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid #dee2e6;
+}
+
+/* 체크박스 스타일 초기화 */
+input[type="checkbox"] {
+  margin: 0;
+  padding: 0;
+  width: 16px;
+  height: 16px;
+}
+
+/* 체크박스 셀 */
+td:first-child,
+th:first-child {
+  width: 16px;
+  padding: 8px !important;
+  text-align: center;
+  vertical-align: middle;
+}
+
+/* 호버 효과 */
+.user-data-table tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+/* 수정 버튼 */
+.edit-button {
+  padding: 6px 12px;
+  background: #228be6;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.edit-button:hover {
+  background: #1c7ed6;
+}
+
+/* 빈 데이터 표시 */
+.no-data-message {
+  text-align: center;
+  padding: 2rem;
+  color: #868e96;
+}
+
+/* 짝수/홀수 행 구분 */
+.user-data-table tbody tr:nth-child(even) {
+  background-color: #f8f9fa;
+}
+
+/* 호버 효과 */
+.user-data-table tbody tr:hover {
+  background-color: #e9ecef;
+}
+
+/* 로딩 더보기 */
+.loading-more {
+  padding: 1rem;
+  text-align: center;
+  border-top: 1px solid #dee2e6;
+}
+
+/* 모바일 최적화 */
+@media screen and (max-width: 768px) {
+  .data-page-container {
+    padding: 0.5rem;
+  }
+
+  .data-header {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .filter-controls {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .table-wrapper {
+    margin: 0.5rem 0;
+    max-height: calc(100vh - 200px);
+  }
+
+  .user-data-table {
+    font-size: 0.85rem;
+  }
+
+  .user-data-table th,
+  .user-data-table td {
+    padding: 0.75rem 0.5rem;
+  }
+
+  /* 불필요한 컬럼 숨기기 */
+  .user-data-table .hide-on-mobile {
+    display: none;
+  }
+
+  /* 작은 화면에서 버튼 크기 조정 */
+  .edit-button {
+    padding: 0.3rem 0.6rem;
+    font-size: 0.85rem;
+  }
+}
+
+/* 태블릿 최적화 */
+@media screen and (min-width: 769px) and (max-width: 1024px) {
+  .data-page-container {
+    padding: 1rem;
+  }
+
+  .filter-controls {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+}
+
+/* 내보내기 버튼 컨테이너 */
+.export-buttons {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+/* 공통 버튼 스타일 */
+.export-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Excel 버튼 */
+.export-button.excel {
+  background-color: #1d6f42;
+  color: white;
+}
+
+.export-button.excel:hover {
+  background-color: #185c37;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+}
+
+.export-button.excel:active {
+  transform: translateY(1px);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* CSV 버튼 */
+.export-button.csv {
+  background-color: #4a5568;
+  color: white;
+}
+
+.export-button.csv:hover {
+  background-color: #3b4253;
+}
+
+/* 내보내기 버튼 스타일 통일 */
+.export-button {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  color: white;
+  cursor: pointer;
+  background-color: #228be6;  /* 기존 파란색 버튼과 동일 */
+  margin-right: 8px;
+}
+
+.export-button:hover {
+  background-color: #1c7ed6;
+}
+
+.export-button.excel {
+  background-color: #40c057;  /* 초록색 계열 */
+}
+
+.export-button.excel:hover {
+  background-color: #37b24d;
+}
+
+.export-button.csv {
+  background-color: #495057;  /* 회색 계열 */
+}
+
+.export-button.csv:hover {
+  background-color: #3b4046;
+}
+
+.backup-button,
+.restore-button {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  color: white;
+  cursor: pointer;
+  background-color: #228be6;
+  margin-right: 8px;
+}
+
+.backup-button:hover,
+.restore-button:hover {
+  background-color: #1c7ed6;
+}
+
+/* 내보내기 버튼 스타일 */
+.export-buttons {
+  display: inline-flex;
+  gap: 4px;
+}
+
+.export-button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: normal;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+/* Excel 내보내기 버튼 */
+.export-button.excel {
+  background-color: #2f9e44;
+}
+
+.export-button.excel:hover {
+  background-color: #2b8a3e;
+}
+
+/* CSV 내보내기 버튼 */
+.export-button.csv {
+  background-color: #495057;
+}
+
+.export-button.csv:hover {
+  background-color: #3b4046;
+}
+
+/* 백업 버튼 */
+.backup-button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: normal;
+  color: #fff;
+  background-color: #2f9e44;
+  cursor: pointer;
+}
+
+/* 복원 버튼 */
+.restore-button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: normal;
+  color: #fff;
+  background-color: #228be6;
+  cursor: pointer;
+}
+
+/* 버튼 컨테이너 */
+.data-header {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+/* 모든 버튼 공통 스타일 (export-button, backup-button, restore-button 포함) */
+.data-header button,
+.export-button,
+.backup-button,
+.restore-button {
+  height: 32px;
+  line-height: 32px;
+  padding: 0 12px;
+  font-size: 13px;
+  border: none;
+  border-radius: 4px;
+  color: #fff;
+  cursor: pointer;
+}
+
+/* 새로고침 버튼 */
+button.refresh-button {
+  background-color: #228be6;
+}
+
+/* Excel 내보내기 버튼 */
+button.excel {
+  background-color: #2f9e44;
+}
+
+/* CSV 내보내기 버튼 */
+button.csv {
+  background-color: #495057;
+}
+
+/* 백업 버튼 */
+button.backup-button {
+  background-color: #2f9e44;
+}
+
+/* 복원 버튼 */
+button.restore-button {
+  background-color: #228be6;
+}
+
+/* 키보드 포커스 스타일 */
+.user-data-table button:focus,
+.user-data-table input:focus {
+  outline: 2px solid #228be6;
+  outline-offset: 2px;
+}
+
+/* 고대비 모드 대응 */
+@media (forced-colors: active) {
+  .user-data-table th,
+  .user-data-table td {
+    border-color: CanvasText;
+  }
+  
+  .user-data-table button {
+    border: 1px solid CanvasText;
+  }
+}
+
+/* 텍스트 대비 개선 */
+.user-data-table th {
+  color: #000;  /* 한 색상으로 변경 */
+}
+
+.user-data-table td {
+  color: #222;
+}
+
+/* 포커스 가능한 요소들의 최소 크기 보장 */
+.user-data-table button,
+.user-data-table input[type="checkbox"] {
+  min-width: 44px;
+  min-height: 44px;
+}
+
+/* 체크박스 크기 조정 */
+.custom-checkbox {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  cursor: pointer;
+}
+
+/* 체크박스 셀 */
+.checkbox-cell {
+  width: 16px;
+  padding: 8px !important;
+  text-align: center;
+  vertical-align: middle;
+}
+
+/* 접근성 포커스 스타일 */
+.custom-checkbox:focus {
+  outline: 2px solid #228be6;
+  outline-offset: 2px;
+}
+
+/* 고대비 모드 대응 */
+@media (forced-colors: active) {
+  .custom-checkbox {
+    forced-color-adjust: none;
+  }
+}
+
+/* 체크박스 리셋 */
+.custom-checkbox {
+  appearance: checkbox; /* 브라우저 기본 체크박스 모양 사용 */
+  -webkit-appearance: checkbox;
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+/* 체크박스 셀 크기 조정 */
+.checkbox-cell {
+  width: 16px;
+  padding: 8px !important;
+  text-align: center;
+  vertical-align: middle;
+}
+
+/* 기존 접근성 관련 스타일은 유지하되 체크박스에는 영향 없도록 수정 */
+.user-data-table button:focus {
+  outline: 2px solid #228be6;
+  outline-offset: 2px;
+}
+
+/* 체크박스 크기 재설정 */
+.user-data-table input[type="checkbox"] {
+  width: 16px !important;
+  height: 16px !important;
+  min-width: 16px !important;
+  min-height: 16px !important;
+  margin: 0;
+  padding: 0;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+/* 체크박스 셀 크기 */
+.user-data-table th:first-child,
+.user-data-table td:first-child {
+  width: 16px;
+  padding: 8px !important;
+  text-align: center;
+  vertical-align: middle;
+}
+
+/* 기존 접근성 관련 스타일은 버튼에만 적용 */
+.user-data-table button {
+  min-width: 44px;
+  min-height: 44px;
+}
+
+/* 기존 스타일 유지하면서 반응형 스타일 추가 */
+
+/* 테이블 랩퍼 반응형 */
+.table-wrapper {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin: 1rem 0;
+  background: white;
+  border: 1px solid #e9ecef;
+  border-radius: 4px;
+}
+
+/* 모바일 최적화 */
+@media screen and (max-width: 768px) {
+  /* 테이블 헤더 텍스트 크기 조정 */
+  .user-data-table th {
+    padding: 8px;
+    font-size: 13px;
+  }
+
+  /* 테이블 셀 패딩 조정 */
+  .user-data-table td {
+    padding: 8px;
+    font-size: 13px;
+  }
+
+  /* 버튼 크기 조정 */
+  .data-header button {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+
+  /* 검색창 크기 조정 */
+  .search-input {
+    max-width: 200px;
+  }
+}
+
+/* 작은 모바일 화면 최적화 */
+@media screen and (max-width: 480px) {
+  /* 테이블 헤더 텍스트 더 작게 */
+  .user-data-table th {
+    padding: 6px;
+    font-size: 12px;
+  }
+
+  /* 테이블 셀 더 작게 */
+  .user-data-table td {
+    padding: 6px;
+    font-size: 12px;
+  }
+
+  /* 버튼 세로 정렬 */
+  .data-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  /* 검색창 전체 너비로 */
+  .search-input {
+    max-width: 100%;
+  }
+}
+
+/* 필터 스타일 */
+.table-filters {
+  margin: 16px 0;
+  padding: 16px;
+  background: white;
+  border: 1px solid #e9ecef;
+  border-radius: 4px;
+  display: flex;
+  gap: 24px;
+}
+
+.filter-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.filter-group label {
+  color: #495057;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.filter-group input {
+  padding: 6px 12px;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.filter-group input:focus {
+  outline: none;
+  border-color: #228be6;
+}
+
+.filter-group span {
+  color: #868e96;
+}
+
+/* 필터 초기화 버튼 */
+.reset-filter-button {
+  padding: 6px 12px;
+  background-color: #868e96;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+  margin-left: auto;
+}
+
+.reset-filter-button:hover {
+  background-color: #495057;
+}
+
+.search-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: 20px;
+}
+
+.search-group select {
+  padding: 5px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  height: 32px;
+}
+
+.search-group input {
+  padding: 5px 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  width: 200px;
+  height: 32px;
+}
+
+.search-group input:focus,
+.search-group select:focus {
+  outline: none;
+  border-color: #4a90e2;
+  box-shadow: 0 0 3px rgba(74, 144, 226, 0.3);
+}

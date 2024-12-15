@@ -1,0 +1,28 @@
+.nav-bar {
+    background-color: #2d3748;
+    padding: 16px;
+  }
+  
+  .nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 16px;
+  }
+  
+  .nav-list {
+    display: inline-block;
+  }
+  
+  .nav-link {
+    color: white;
+    text-decoration: none;
+    font-weight: 500;
+    padding: 8px 16px;
+    border-radius: 6px;
+    display: inline-block;
+    margin-right: 24px;
+  }
+  
+  .nav-link:hover {
+    background-color: #4a5568;
+  }

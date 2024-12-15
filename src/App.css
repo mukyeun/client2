@@ -1,0 +1,340 @@
+.App {
+  text-align: center;
+  min-height: 100vh;
+  background: #f8fafc;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.nav-menu {
+  background: linear-gradient(to right, #334155, #1e293b);
+  padding: 0.75rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.nav-left h1 {
+  color: #fef9c3;
+  font-size: 2.5rem;
+  font-weight: 600;
+  margin: 0;
+  letter-spacing: 0.05em;
+}
+
+.nav-right {
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+}
+
+.nav-link {
+  color: #fef9c3;
+  font-size: 1.5rem;
+  font-weight: 600;
+  text-decoration: none;
+  padding: 0.8rem 1.8rem;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  letter-spacing: 0.05em;
+}
+
+.nav-link:hover {
+  color: #fef08a;
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateY(-1px);
+}
+
+/* 활성 링크 스타일 */
+.nav-link.active {
+  background: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .nav-menu {
+    padding: 0.8rem 1rem;
+  }
+  
+  .nav-left h1 {
+    font-size: 1.2rem;
+  }
+  
+  .nav-link {
+    padding: 0.5rem 0.8rem;
+    font-size: 0.9rem;
+  }
+}
+
+/* 글래스모피즘 효과를 위한 배경 */
+.nav-menu::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  backdrop-filter: blur(10px);
+  z-index: -1;
+}
+
+/* 활성 링크 표시를 위한 스타일 */
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 2px;
+  background: #2563eb;
+  transition: width 0.2s ease;
+}
+
+.nav-link:hover::after,
+.nav-link.active::after {
+  width: 80%;
+}
+
+.section-title {
+  text-align: left;
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin: 1rem 0;
+  color: #1e293b;
+  padding-left: 1rem;
+  border-left: 4px solid #2563eb;
+  letter-spacing: -0.5px;
+  width: 100%;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-right: 20px;
+}
+
+/* 입력 필드 컨테이너 */
+.input-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;  /* 좌측 정렬 */
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* 입력 필드 그룹 */
+.input-group {
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;  /* 좌측 정렬 */
+  gap: 20px;
+  margin-bottom: 15px;
+}
+
+/* 라디오 버튼 그룹 */
+.radio-group {
+  display: flex;
+  justify-content: flex-start;  /* 좌측 정렬 */
+  gap: 20px;
+}
+
+/* 입력 필드 */
+input[type="text"],
+input[type="number"] {
+  text-align: left;  /* 입력 텍스트 좌측 정렬 */
+  padding: 8px 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  width: 100%;
+  max-width: 300px;
+}
+
+/* 입력 필드 라벨 스타일 */
+.input-label {
+  font-weight: 600;  /* 원래의 진하기로 복원 */
+  color: #1e293b;    
+  margin-bottom: 6px;
+  font-size: 0.95rem;  /* 원래 기로 복원 */
+}
+
+/* 라디오 버튼 라벨도 동일하게 복원 */
+.radio-group label {
+  font-weight: 600;
+  color: #1e293b;
+}
+
+/* 섹션별 입력 필드 라벨 스타일 강화 */
+.field-label {
+  font-size: 1.1rem;         
+  font-weight: 900;          /* 가장 진한 굵기로 설정 */
+  color: #000000;           /* 순수 ��정색으로 변경 */
+  margin-bottom: 8px;
+  display: block;
+  letter-spacing: -0.3px;
+  text-shadow: 0 0 0.2px rgba(0,0,0,0.5);  /* 텍스트 그림자 강화 */
+  -webkit-font-smoothing: antialiased;     /* 텍스트 렌더링 선명도 향상 */
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* 입력 필드 내부 텍스트는 더 작고 연하게 유지 */
+input[type="text"],
+input[type="number"],
+select,
+textarea {
+  font-size: 0.9rem;
+  font-weight: 400;
+  color: #64748b;
+  padding: 8px 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+}
+
+/* placeholder 텍스트도 연하게 유지 */
+input::placeholder,
+textarea::placeholder {
+  color: #94a3b8;
+  font-size: 0.9rem;
+}
+
+/* Header 스타일 */
+header {
+  background: linear-gradient(to right, #1e293b, #0f172a);
+  padding: 0.75rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+header a {
+  text-decoration: none;
+}
+
+header .header-title {
+  color: #ffffff;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+header .header-actions {
+  display: flex;
+  gap: 1rem;
+}
+
+header .header-link {
+  color: #cbd5e1;
+  font-size: 0.875rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+header .header-link:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* 맥파분석 섹션 스타일 */
+.pulse-wave-analysis {
+  max-width: 800px;
+  margin: 20px auto;
+  padding: 0 20px;
+}
+
+.pulse-wave-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 15px;
+  margin-top: 10px;
+}
+
+.pulse-wave-input {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.pulse-wave-input input {
+  text-align: left;
+  padding: 8px 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  width: 100%;
+}
+
+.pulse-wave-input label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+/* 파일 입력 컨테이너 스타일 */
+.file-input-container {
+  margin: 20px 0;
+  text-align: left;
+}
+
+.file-input {
+  padding: 10px;
+  border: 2px dashed #e2e8f0;
+  border-radius: 6px;
+  width: 100%;
+  cursor: pointer;
+  background: #f8fafc;
+  transition: all 0.2s ease;
+}
+
+.file-input:hover {
+  border-color: #2563eb;
+  background: #f1f5f9;
+}
+
+.file-input::-webkit-file-upload-button {
+  background: #2563eb;
+  color: white;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-right: 10px;
+  transition: all 0.2s ease;
+}
+
+.file-input::-webkit-file-upload-button:hover {
+  background: #1d4ed8;
+}

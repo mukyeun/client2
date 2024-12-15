@@ -1,0 +1,389 @@
+/* 섹션 컨테이너 */
+.form-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* 섹션 공통 스타일 */
+.form-section {
+  padding: 30px;
+  border: 0.5px solid #000000;
+  border-radius: 4px;
+  margin-bottom: 20px;
+  background-color: white;
+  width: 100%;
+  max-width: 800px;
+  box-sizing: border-box;
+}
+
+/* 섹션 제목 스타일 */
+.section-title {
+  position: relative;
+  padding-left: 12px;
+  margin-bottom: 25px;
+  font-size: 16px;
+  font-weight: 500;
+  color: #000000;
+}
+
+.section-title::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4px;
+  height: 16px;
+  background-color: #0066FF;
+}
+
+/* 모든 입력 필드 기본 스타일 완전 통일 */
+.form-container input,
+.form-container select,
+.form-container textarea,
+.form-container button,
+.form-container .form-control,
+.file-input,
+.button,
+.form-container input[type="text"],
+.form-container input[type="number"] {
+  width: 100%;
+  height: 40px;
+  padding: 8px 12px;
+  border: 0.2px solid rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  font-size: 14px;
+  background-color: white;
+  box-sizing: border-box;
+}
+
+/* 레이블 스타일 통일 */
+.form-label,
+.input-label {
+  display: block;
+  font-size: 14px;
+  color: #666666;
+  margin-bottom: 4px;
+}
+
+/* 입력 필드 그룹 레이아웃 */
+.form-group {
+  flex: 1;
+  margin-bottom: 12px;
+}
+
+/* 행 레이아웃 통일 */
+.form-row,
+.personal-info,
+.personality-row,
+.measurements-row,
+.pulse-analysis-row,
+.pulse-wave-row,
+.pulse-ratio-row {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 12px;
+  align-items: flex-start;
+}
+
+/* 특수 버튼 스타일 */
+.file-select,
+.data-fetch-button,
+button[type="button"] {
+  height: 40px;
+  border: 0.3px solid rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+  background-color: white;
+  padding: 0 16px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+/* 드롭다운 화살표 커스텀 */
+select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 30px !important;
+}
+
+/* placeholder 스타일 통일 */
+::placeholder {
+  color: #999999;
+  font-size: 14px;
+}
+
+/* 증상 태그 스타일 */
+.symptom-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 8px;
+  background-color: #f8f9fa;
+  border: 0.2px solid rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+/* 삭제 버튼 */
+.symptom-tag button {
+  width: 20px;
+  height: 20px;
+  min-width: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: none;
+  color: #dc3545;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 0;
+  margin-left: 6px;
+  transition: all 0.2s ease;
+}
+
+.symptom-tag button:hover {
+  color: #c82333;
+  transform: scale(1.1);
+}
+
+/* 증상 텍스트 */
+.symptom-tag .symptom-text {
+  flex: 1;
+}
+
+/* 증상 입력 필드 행 */
+.symptoms-row {
+  display: flex;
+  gap: 15px;
+  width: 100%;
+  margin-bottom: 12px;
+}
+
+.symptoms-row .symptom-input {
+  flex: 1;
+  height: 40px;
+}
+
+/* 호버/포커스 상태 통일 */
+.form-container input:hover,
+.form-container select:hover,
+.form-container button:hover,
+.form-container input:focus,
+.form-container select:focus,
+.form-container button:focus {
+  border: 0.2px solid rgba(0, 0, 0, 0.4);
+  outline: none;
+}
+
+/* 우측 정렬 버튼 그룹 */
+.button-group {
+  display: flex;
+  justify-content: center;
+  margin-top: 24px;
+  padding: 16px 0;
+}
+
+/* 필수 입력 필드 표시 */
+.required::after {
+  content: '*';
+  color: #ff0000;
+  margin-left: 4px;
+}
+
+/* 기본 정보 섹션 */
+.basic-info-section {
+  padding: 20px;
+  border: 1px solid rgba(0, 0, 0, 0.6);
+  border-left: 10px solid #4A90E2;
+  border-radius: 4px;
+  margin-bottom: 15px;
+  background-color: white;
+  box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* 맥박 분석 섹션 */
+.pulse-section {
+  padding: 20px;
+  border: 1px solid rgba(0, 0, 0, 0.6);
+  border-left: 10px solid #50C878;
+  border-radius: 4px;
+  margin-bottom: 15px;
+  background-color: white;
+  box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* 맥파분석 섹션 */
+.pulse-wave-section {
+  padding: 20px;
+  border: 1px solid rgba(0, 0, 0, 0.6);
+  border-left: 10px solid #9B51E0;
+  border-radius: 4px;
+  margin-bottom: 15px;
+  background-color: white;
+  box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* 증상 선택 섹션 */
+.symptoms-section {
+  padding: 20px;
+  border: 1px solid rgba(0, 0, 0, 0.6);
+  border-left: 10px solid #F2994A;
+  border-radius: 4px;
+  margin-bottom: 15px;
+  background-color: white;
+  box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* 복용약물 섹션 */
+.medication-section {
+  padding: 20px;
+  border: 1px solid rgba(0, 0, 0, 0.6);
+  border-left: 10px solid #EB5757;
+  border-radius: 4px;
+  margin-bottom: 15px;
+  background-color: white;
+  box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* 메모 섹션 */
+.memo-section {
+  padding: 20px;
+  border: 1px solid rgba(0, 0, 0, 0.6);
+  border-left: 10px solid #219653;
+  border-radius: 4px;
+  margin-bottom: 15px;
+  background-color: white;
+  box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* 병명 입력 필드 컨테이너 */
+.selected-symptoms {
+  width: 100%;
+  min-height: 40px;
+  padding: 4px 8px;
+  border: 0.2px solid rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  background-color: white;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin-top: 8px;
+}
+
+/* 병명 입력 필드 */
+.disease-input {
+  flex: 1;  /* 남은 공간 모두 차지 */
+  width: calc(100% - 80px);  /* 삭제 버튼 공간 제외 */
+}
+
+/* 병명 입력 필드 크기 확장 */
+.disease-input input {
+  width: 100%;
+  height: 40px;
+  padding: 8px 12px;
+  border: 0.2px solid rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  font-size: 14px;
+  background-color: white;
+}
+
+/* 삭제 버튼 스타일 */
+.delete-button {
+  width: 24px;  /* 작은 정사각형 */
+  height: 24px;  /* 작은 정사각형 */
+  min-width: 24px;  /* 크기 고정 */
+  min-height: 24px;  /* 크기 고�� */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 0.2px solid rgba(220, 53, 69, 0.3);
+  border-radius: 4px;
+  background-color: white;
+  color: #dc3545;
+  cursor: pointer;
+  font-size: 12px;
+  padding: 0;
+  transition: all 0.2s ease;
+}
+
+.delete-button:hover {
+  background-color: #dc3545;
+  color: white;
+  border-color: #dc3545;
+}
+
+/* 상단 3개 입력 필드와 동일한 너비로 조정 */
+.disease-input-row {
+  display: flex;
+  gap: 15px;
+  width: 100%;
+  margin-bottom: 12px;
+}
+
+.disease-input-row .disease-input {
+  flex: 1;  /* 기본 정보 섹션의 입력 필드와 동일한 비율 */
+}
+
+/* 선택된 질병 컨테이너 */
+.selected-disease {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  margin-bottom: 12px;
+}
+
+/* 질병명 텍스트 영역 */
+.disease-text {
+  flex: 1;
+  padding: 8px 12px;
+  background-color: white;
+  border: 0.2px solid rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  font-size: 14px;
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+}
+
+/* 버튼 그룹 컨테이너 */
+.button-group {
+  display: flex;
+  justify-content: center;
+  margin-top: 24px;
+  padding: 16px 0;
+}
+
+/* 원형 저장 버튼 */
+.button.primary {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  padding: 0;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  background-color: #1B5E20;  /* 헤더와 동일한 녹색 계열 */
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.button.primary:hover {
+  background-color: #2E7D32;  /* 호버 시 약간 밝은 녹색 */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+.button.primary:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}

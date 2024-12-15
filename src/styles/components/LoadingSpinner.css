@@ -1,0 +1,50 @@
+/* src/styles/components/LoadingSpinner.css */
+.loading-spinner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+  
+  .spinner-circle {
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #3498db;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    animation: spin 1s linear infinite;
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  
+  /* src/styles/components/ErrorMessage.css */
+  .error-message {
+    padding: 10px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background-color: #fff3f3;
+    border: 1px solid #ff4d4d;
+    color: #ff4d4d;
+  }
+  
+  /* src/styles/components/Toast.css */
+  .toast {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 12px 24px;
+    border-radius: 4px;
+    background-color: #333;
+    color: white;
+    animation: slideIn 0.3s ease-out;
+  }
+  
+  @keyframes slideIn {
+    from { transform: translateY(100%); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }

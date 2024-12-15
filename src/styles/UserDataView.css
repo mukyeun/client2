@@ -1,0 +1,48 @@
+.view-container {
+    max-width: 1200px;
+    margin: 32px auto;
+    padding: 0 20px;
+  }
+  
+  .header {
+    margin-bottom: 24px;
+  }
+  
+  .title {
+    font-size: 1.8rem;
+    color: #2d3748;
+    margin: 0 0 16px 0;
+  }
+  
+  .button-group {
+    margin-bottom: 16px;
+  }
+  
+  .button {
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-right: 12px;
+  }
+  
+  .button.primary {
+    background-color: #3182ce;
+    color: white;
+    border: none;
+  }
+  
+  .button.primary:hover {
+    background-color: #2c5282;
+  }
+  
+  .button.secondary {
+    background-color: #e2e8f0;
+    color: #4a5568;
+    border: none;
+  }
+  
+  .button.secondary:hover {
+    background-color: #cbd5e0;
+  }

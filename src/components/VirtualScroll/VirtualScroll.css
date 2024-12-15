@@ -1,0 +1,14 @@
+.virtual-scroll-container {
+  overflow-y: auto;
+  position: relative;
+  border: 1px solid #dee2e6;
+}
+
+.virtual-scroll-content {
+  position: relative;
+}
+
+.virtual-scroll-items {
+  position: absolute;
+  width: 100%;
+} 
