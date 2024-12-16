@@ -33,17 +33,30 @@ const UserDataTable = () => {
   });
 
   // 1. 기본 유틸리티 함수들
-  const formatDate = (dateString) => {
-    try {
-      if (!dateString) return '-';
-      const date = new Date(dateString);
-      if (isNaN(date.getTime())) {
-        return '-';
-      }
-      return `${date.getFullYear()}/${String(date.getMonth() + 1).padStart(2, '0')}/${String(date.getDate()).padStart(2, '0')} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
-    } catch (error) {
-      return '-';
+  const formatDate = (date) => {
+    if (!date) {
+      const now = new Date();
+      // 밀리초 단위까지 포함하여 더 정확한 시간 표시
+      return now.toLocaleString('ko-KR', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        fractionalSecondDigits: 3
+      });
     }
+    const d = new Date(date);
+    return d.toLocaleString('ko-KR', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      fractionalSecondDigits: 3
+    });
   };
 
   // 2. 데이터 처리 기본 함수들
@@ -521,76 +534,25 @@ const UserDataTable = () => {
           aria-label="환자 목록"
         >
           <thead>
-            <tr role="row">
-              <th role="columnheader" aria-label="선택">
-                <input
-                  type="checkbox"
-                  className="custom-checkbox"
-                  checked={userData.length > 0 && checkedItems.size === userData.length}
-                  onChange={toggleAllCheckboxes}
-                  aria-label="모든 항목 선택"
-                />
-              </th>
-              <th onClick={() => handleSort('createdAt')} className="sortable-header">
-                등록일시 {renderSortIcon('createdAt')}
-              </th>
-              <th onClick={() => handleSort('name')} className="sortable-header">
-                이름 {renderSortIcon('name')}
-              </th>
-              <th onClick={() => handleSort('residentNumber')} className="sortable-header">
-                주민등록번호 {renderSortIcon('residentNumber')}
-              </th>
-              <th onClick={() => handleSort('gender')} className="sortable-header">
-                성별 {renderSortIcon('gender')}
-              </th>
-              <th onClick={() => handleSort('height')} className="sortable-header">
-                신장(cm) {renderSortIcon('height')}
-              </th>
-              <th onClick={() => handleSort('weight')} className="sortable-header">
-                체중(kg) {renderSortIcon('weight')}
-              </th>
-              <th onClick={() => handleSort('bmi')} className="sortable-header">
-                BMI {renderSortIcon('bmi')}
-              </th>
-              <th onClick={() => handleSort('stress')} className="sortable-header">
-                스트레스 {renderSortIcon('stress')}
-              </th>
-              <th onClick={() => handleSort('workIntensity')} className="sortable-header">
-                노동강도 {renderSortIcon('workIntensity')}
-              </th>
-              <th onClick={() => handleSort('pulse')} className="sortable-header">
-                맥박(회/분) {renderSortIcon('pulse')}
-              </th>
-              <th onClick={() => handleSort('systolicBP')} className="sortable-header">
-                수축기 혈압 {renderSortIcon('systolicBP')}
-              </th>
-              <th onClick={() => handleSort('diastolicBP')} className="sortable-header">
-                이완기 혈압 {renderSortIcon('diastolicBP')}
-              </th>
-              <th onClick={() => handleSort('pvc')} className="sortable-header">
-                PVC {renderSortIcon('pvc')}
-              </th>
-              <th onClick={() => handleSort('bv')} className="sortable-header">
-                BV {renderSortIcon('bv')}
-              </th>
-              <th onClick={() => handleSort('sv')} className="sortable-header">
-                SV {renderSortIcon('sv')}
-              </th>
-              <th onClick={() => handleSort('selectedSymptoms')} className="sortable-header">
-                증상 {renderSortIcon('selectedSymptoms')}
-              </th>
-              <th onClick={() => handleSort('medication')} className="sortable-header">
-                복용약물 {renderSortIcon('medication')}
-              </th>
-              <th onClick={() => handleSort('preference')} className="sortable-header">
-                기호식품 {renderSortIcon('preference')}
-              </th>
-              <th onClick={() => handleSort('memo')} className="sortable-header">
-                메모 {renderSortIcon('memo')}
-              </th>
-              <th className="action-cell">
-                액션
-              </th>
+            <tr>
+              <th>측정일시</th>
+              <th>이름</th>
+              <th>주민번호</th>
+              <th>성별</th>
+              <th>신장(cm)</th>
+              <th>체중(kg)</th>
+              <th>BMI</th>
+              <th>a-b(ms)</th>
+              <th>a-c(ms)</th>
+              <th>a-d(ms)</th>
+              <th>a-e(ms)</th>
+              <th>b/a</th>
+              <th>c/a</th>
+              <th>d/a</th>
+              <th>e/a</th>
+              <th>PVC</th>
+              <th>BV</th>
+              <th>SV</th>
             </tr>
           </thead>
           <tbody>
@@ -610,31 +572,21 @@ const UserDataTable = () => {
                   </td>
                   <td>{formatDate(user.createdAt)}</td>
                   <td>{user.name}</td>
-                  <td>{user.residentNumber}</td>
                   <td>{user.gender}</td>
                   <td>{user.height}</td>
                   <td>{user.weight}</td>
                   <td>{user.bmi}</td>
-                  <td>{user.stress}</td>
-                  <td>{user.workIntensity}</td>
-                  <td>{user.pulse}</td>
-                  <td>{user.systolicBP}</td>
-                  <td>{user.diastolicBP}</td>
+                  <td>{user.ab_ms}</td>
+                  <td>{user.ac_ms}</td>
+                  <td>{user.ad_ms}</td>
+                  <td>{user.ae_ms}</td>
+                  <td>{user.ba_ratio}</td>
+                  <td>{user.ca_ratio}</td>
+                  <td>{user.da_ratio}</td>
+                  <td>{user.ea_ratio}</td>
                   <td>{user.pvc}</td>
                   <td>{user.bv}</td>
                   <td>{user.sv}</td>
-                  <td>{Array.isArray(user.selectedSymptoms) ? user.selectedSymptoms.join(', ') : user.selectedSymptoms}</td>
-                  <td>{user.medication}</td>
-                  <td>{user.preference}</td>
-                  <td>{user.memo}</td>
-                  <td className="action-cell">
-                    <button 
-                      onClick={() => handleEdit(user)}
-                      className="edit-button"
-                    >
-                      수정
-                    </button>
-                  </td>
                 </tr>
               ))}
           </tbody>

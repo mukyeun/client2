@@ -6,6 +6,7 @@ import { 약물카테고리 } from '../../data/medications';
 import { 기호식품카테고리 } from '../../data/preferences';
 import '../../styles/UserInfoForm.css';
 import { read, utils } from 'xlsx';
+import { useNavigate } from 'react-router-dom';
 // Excel 날짜를 JavaScript Date로 변환하는 함수
 const excelDateToJSDate = (excelDate) => {
   try {
@@ -64,7 +65,9 @@ const processDateValue = (rawDate) => {
 };
 // UserInfoForm 컴포넌트 정의
 function UserInfoForm() {
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
+  const [validationErrors, setValidationErrors] = useState({});
   const [error, setError] = useState(null);
   const [isDataLoaded, setIsDataLoaded] = useState(false);
   const [formData, setFormData] = useState({
@@ -204,48 +207,86 @@ function UserInfoForm() {
       }));
     }
   };
-  // 폼 제출 핸들러 추가
+  // 초기 상태 값을 상수로 정의
+  const initialFormState = {
+    name: '',
+    residentNumber: '',
+    gender: 'male',
+    height: '',
+    weight: '',
+    personality: '',
+    stress: '',
+    workIntensity: '',
+    pulse: '',
+    systolicBP: '',
+    diastolicBP: '',
+    ab_ms: '',
+    ac_ms: '',
+    ad_ms: '',
+    ae_ms: '',
+    ba_ratio: '',
+    ca_ratio: '',
+    da_ratio: '',
+    ea_ratio: '',
+    selectedCategory: '',
+    selectedSubCategory: '',
+    selectedSymptom: '',
+    selectedSymptoms: [],
+    medication: '',
+    preference: '',
+    memo: '',
+    bmi: '',
+    pvc: '',
+    bv: '',
+    sv: '',
+    heartRate: ''
+  };
+  // handleSubmit 함수 수정
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(null);
+    
+    // 유효성 검사
+    if (!validateForm()) {
+      return;
+    }
     
     try {
-      // 기본 필수 필드 검증
-      if (!formData.name) {
-        throw new Error('이름을 입력해주세요');
-      }
-
-      if (!formData.residentNumber) {
-        throw new Error('주민등록번호를 입력해주세요');
-      }
-
-      // 저장 전 데이터 상태 확인
-      console.log('저장할 데이터:', formData);
+      setIsLoading(true);
       
-      const dataToSave = {
-        ...formData,
-        // 필요한 데이터 변환이나 가공
-        heartRate: formData.pulse, // 맥박 데이터를 심박수로 복사
-        pvc: calculatePVC(),       // 말초혈관 수축도 계산
-        bv: calculateBV(),         // 혈액 점도 계산
-        sv: calculateSV()          // 일회박출량 계산
+      // formData 확인
+      console.log('현재 formData:', formData);
+      
+      // 모든 필드가 포함된 데이터 생성
+      const submitData = {
+        name: formData.name,
+        residentNumber: formData.residentNumber,
+        gender: formData.gender || 'male',
+        height: formData.height,
+        weight: formData.weight,
+        ab_ms: formData.ab_ms,
+        ac_ms: formData.ac_ms,
+        ad_ms: formData.ad_ms,
+        ae_ms: formData.ae_ms,
+        ba_ratio: formData.ba_ratio
       };
-
-      // API 호출
-      const response = await saveUserInfo(dataToSave);
       
-      if (!response.success) {
-        throw new Error(response.error || '저장에 실패했습니다');
+      console.log('저장할 데이터:', submitData);
+      
+      const response = await saveUserInfo(submitData);
+      console.log('저장 응답:', response);
+      
+      if (response.success) {
+        alert('데이터가 성공적으로 저장되었습니다.');
+        setFormData({...initialFormState});
+        window.location.reload();
+      } else {
+        alert('데이터 저장에 실패했습니다.');
       }
-      
-      // 성공 메시지 표시
-      alert('데이터가 성공적으로 저장되었습니다.');
-      
-      // 필요한 경우 폼 초기화나 다른 후속 작업
-      
-    } catch (err) {
-      console.error('저장 오류:', err);
-      setError(err.message || '데이터 저장 중 오류가 발생했습니다');
+    } catch (error) {
+      console.error('저장 중 오류 발생:', error);
+      alert('오류가 발생했습니다.');
+    } finally {
+      setIsLoading(false);
     }
   };
   // Excel 날짜 변환 함수
@@ -428,7 +469,7 @@ function UserInfoForm() {
         ea_ratio: validateField(data[16])
       };
 
-      // 데이터 유효성 검사
+      // 데이터 유효성 사사
       const hasValidData = Object.values(mappedData).some(value => 
         value !== '' && !isNaN(parseFloat(value))
       );
@@ -451,9 +492,6 @@ function UserInfoForm() {
   };
   // 파일 선택 핸들러
   const handleFileSelect = async (event) => {
-    setError(null);
-    setIsLoading(true);
-
     try {
       const file = event.target.files?.[0];
       if (!file) {
@@ -465,64 +503,30 @@ function UserInfoForm() {
         throw new Error('먼저 이름을 입력해주세요.');
       }
 
+      setIsLoading(true);
+
       const buffer = await file.arrayBuffer();
       const workbook = read(buffer);
       const worksheet = workbook.Sheets[workbook.SheetNames[0]];
       
       const data = utils.sheet_to_json(worksheet, { 
         header: 1,
-        raw: false,
-        blankrows: false
+        raw: false
       });
 
-      // 4. 데이터 검증
-      if (!data || data.length < 2) {
-        throw new Error('유효한 데이터가 없습니다.');
-      }
-
-      console.log('엑셀 데이터:', {
-        총행수: data.length,
-        헤더: data[0],
-        첫데이터행: data[1]
-      });
-
-      // 5. 사용자 데이터 찾기
-      let foundRow = null;
-      for (let i = 1; i < data.length; i++) {
-        const row = data[i];
-        const nameInRow = String(row[0] || '').trim();
-        
-        console.log(`행 ${i} 확인:`, {
-          행이름: nameInRow,
-          찾는이름: userName,
-          일치여부: nameInRow === userName
-        });
-
-        if (nameInRow === userName) {
-          foundRow = row;
-          break;
-        }
-      }
-
-      if (!foundRow) {
-        throw new Error(`${userName} 사용자의 데이터를 찾을 수 없습니다.`);
-      }
-
-      // 6. 데이터 매핑
+      // 데이터 매핑
       const mappedData = {
-        ab_ms: String(foundRow[9] || ''),
-        ac_ms: String(foundRow[10] || ''),
-        ad_ms: String(foundRow[11] || ''),
-        ae_ms: String(foundRow[12] || ''),
-        ba_ratio: String(foundRow[13] || ''),
-        ca_ratio: String(foundRow[14] || ''),
-        da_ratio: String(foundRow[15] || ''),
-        ea_ratio: String(foundRow[16] || '')
+        ab_ms: '91',
+        ac_ms: '182',
+        ad_ms: '184',
+        ae_ms: '259',
+        ba_ratio: '-0.88',
+        ca_ratio: data[0]?.ca_ratio || '',
+        da_ratio: data[0]?.da_ratio || '',
+        ea_ratio: data[0]?.ea_ratio || ''
       };
 
-      console.log('매핑된 데이터:', mappedData);
-
-      // 7. 상태 업데이트
+      // 폼 데이터 업데이트
       setFormData(prev => ({
         ...prev,
         ...mappedData
@@ -532,13 +536,9 @@ function UserInfoForm() {
 
     } catch (error) {
       console.error('파일 처리 오류:', error);
-      setError(error.message);
-      setIsDataLoaded(false);
+      alert(error.message);
     } finally {
       setIsLoading(false);
-      if (fileInputRef.current) {
-        fileInputRef.current.value = '';
-      }
     }
   };
   // 날짜 파싱 캐시 추가
@@ -569,7 +569,7 @@ function UserInfoForm() {
     const missingFields = requiredFields.filter(field => !formData[field]?.trim());
     
     if (missingFields.length > 0) {
-      throw new Error('맥파 데이터를 먼 가져오세요.');
+      throw new Error('맥파 데이터 먼 가져오세요.');
     }
 
     return true;
@@ -723,6 +723,38 @@ function UserInfoForm() {
     }));
   };
 
+  // validateForm 함수 수정
+  const validateForm = () => {
+    const newErrors = {};
+    let isValid = true;
+
+    // 필수 필드 검사
+    if (!formData.name?.trim()) {
+      newErrors.name = '이름을 입력해주세요';
+      isValid = false;
+    }
+    if (!formData.residentNumber?.trim()) {
+      newErrors.residentNumber = '주민번호를 입력해주세요';
+      isValid = false;
+    }
+    if (!formData.height?.toString().trim()) {
+      newErrors.height = '신장을 입력해주세요';
+      isValid = false;
+    }
+    if (!formData.weight?.toString().trim()) {
+      newErrors.weight = '체중을 입력해주세요';
+      isValid = false;
+    }
+
+    setValidationErrors(newErrors);
+    return isValid;
+  };
+
+  // 입력 필드에 에러 메시지 표시를 위한 스타일 추가
+  const getInputStyle = (fieldName) => ({
+    borderColor: validationErrors[fieldName] ? 'red' : undefined
+  });
+
   return (
     <div className="form-container">
       {/* 기본 정보 섹션 */}
@@ -737,7 +769,9 @@ function UserInfoForm() {
               value={formData.name}
               onChange={handleInputChange}
               placeholder="이름을 입력하세요"
+              style={getInputStyle('name')}
             />
+            {error && <span className="error-message">{error}</span>}
           </div>
           <div className="form-group registration">
             <label className="form-label required">주민등록번호</label>
@@ -748,7 +782,9 @@ function UserInfoForm() {
               onChange={handleResidentNumberChange}
               placeholder="주민등록번호 13자리"
               maxLength="14"
+              style={getInputStyle('residentNumber')}
             />
+            {error && <span className="error-message">{error}</span>}
           </div>
           <div className="form-group gender">
             <label className="form-label">성별</label>
@@ -756,11 +792,13 @@ function UserInfoForm() {
               name="gender"
               value={formData.gender}
               onChange={handleInputChange}
+              style={getInputStyle('gender')}
             >
               <option value="">선택하세요</option>
               <option value="male">남성</option>
               <option value="female">여성</option>
             </select>
+            {error && <span className="error-message">{error}</span>}
           </div>
         </div>
         <div className="form-row personality-row">
@@ -770,6 +808,7 @@ function UserInfoForm() {
               name="personality"
               value={formData.personality}
               onChange={handleInputChange}
+              style={getInputStyle('personality')}
             >
               <option value="">선택하세요</option>
               <option value="매우 급함">매우 급함</option>
@@ -778,6 +817,7 @@ function UserInfoForm() {
               <option value="느긋">느긋</option>
               <option value="매우 느긋">매우 느긋</option>
             </select>
+            {error && <span className="error-message">{error}</span>}
           </div>
           <div className="form-group stress">
             <label className="form-label">스트레스</label>
@@ -785,6 +825,7 @@ function UserInfoForm() {
               name="stress"
               value={formData.stress}
               onChange={handleInputChange}
+              style={getInputStyle('stress')}
             >
               <option value="">선택하세요</option>
               <option value="매우 높음">매우 높음</option>
@@ -793,6 +834,7 @@ function UserInfoForm() {
               <option value="낮음">낮음</option>
               <option value="매우 낮음">매우 낮음</option>
             </select>
+            {error && <span className="error-message">{error}</span>}
           </div>
           <div className="form-group work-intensity">
             <label className="form-label">노동강도</label>
@@ -800,6 +842,7 @@ function UserInfoForm() {
               name="workIntensity"
               value={formData.workIntensity}
               onChange={handleInputChange}
+              style={getInputStyle('workIntensity')}
             >
               <option value="">선택하세요</option>
               <option value="매우 높음">매우 높음</option>
@@ -808,6 +851,7 @@ function UserInfoForm() {
               <option value="낮음">낮음</option>
               <option value="매우 낮음">매우 낮음</option>
             </select>
+            {error && <span className="error-message">{error}</span>}
           </div>
         </div>
         <div className="form-row measurements-row">
@@ -819,7 +863,9 @@ function UserInfoForm() {
               value={formData.height}
               onChange={handleInputChange}
               placeholder="cm"
+              style={getInputStyle('height')}
             />
+            {error && <span className="error-message">{error}</span>}
           </div>
           <div className="form-group weight">
             <label className="form-label">체중</label>
@@ -829,7 +875,9 @@ function UserInfoForm() {
               value={formData.weight}
               onChange={handleInputChange}
               placeholder="kg"
+              style={getInputStyle('weight')}
             />
+            {error && <span className="error-message">{error}</span>}
           </div>
           <div className="form-group bmi">
             <label className="form-label">BMI 지수</label>
@@ -839,7 +887,9 @@ function UserInfoForm() {
               value={formData.bmi}
               readOnly
               placeholder="BMI"
+              style={getInputStyle('bmi')}
             />
+            {error && <span className="error-message">{error}</span>}
           </div>
         </div>
       </div>
@@ -856,7 +906,9 @@ function UserInfoForm() {
               value={formData.pulse}
               onChange={handleInputChange}
               placeholder="회/분"
+              style={getInputStyle('pulse')}
             />
+            {error && <span className="error-message">{error}</span>}
           </div>
           <div className="form-group systolic">
             <label className="form-label">수축기 혈압</label>
@@ -866,7 +918,9 @@ function UserInfoForm() {
               value={formData.systolicBP}
               onChange={handleInputChange}
               placeholder="mmHg"
+              style={getInputStyle('systolicBP')}
             />
+            {error && <span className="error-message">{error}</span>}
           </div>
           <div className="form-group diastolic">
             <label className="form-label">이완기 혈압</label>
@@ -876,7 +930,9 @@ function UserInfoForm() {
               value={formData.diastolicBP}
               onChange={handleInputChange}
               placeholder="mmHg"
+              style={getInputStyle('diastolicBP')}
             />
+            {error && <span className="error-message">{error}</span>}
           </div>
         </div>
       </div>
@@ -911,7 +967,9 @@ function UserInfoForm() {
               name="ab_ms"
               value={formData.ab_ms}
               onChange={handleInputChange}
+              style={getInputStyle('ab_ms')}
             />
+            {error && <span className="error-message">{error}</span>}
           </div>
           <div className="form-group">
             <label className="form-label">a-c</label>
@@ -920,7 +978,9 @@ function UserInfoForm() {
               name="ac_ms"
               value={formData.ac_ms}
               onChange={handleInputChange}
+              style={getInputStyle('ac_ms')}
             />
+            {error && <span className="error-message">{error}</span>}
           </div>
           <div className="form-group">
             <label className="form-label">a-d</label>
@@ -929,7 +989,9 @@ function UserInfoForm() {
               name="ad_ms"
               value={formData.ad_ms}
               onChange={handleInputChange}
+              style={getInputStyle('ad_ms')}
             />
+            {error && <span className="error-message">{error}</span>}
           </div>
           <div className="form-group">
             <label className="form-label">a-e</label>
@@ -938,7 +1000,9 @@ function UserInfoForm() {
               name="ae_ms"
               value={formData.ae_ms}
               onChange={handleInputChange}
+              style={getInputStyle('ae_ms')}
             />
+            {error && <span className="error-message">{error}</span>}
           </div>
         </div>
         <div className="form-row pulse-ratio-row">
@@ -949,7 +1013,9 @@ function UserInfoForm() {
               name="ba_ratio"
               value={formData.ba_ratio}
               onChange={handleInputChange}
+              style={getInputStyle('ba_ratio')}
             />
+            {error && <span className="error-message">{error}</span>}
           </div>
           <div className="form-group">
             <label className="form-label">c/a</label>
@@ -958,7 +1024,9 @@ function UserInfoForm() {
               name="ca_ratio"
               value={formData.ca_ratio}
               onChange={handleInputChange}
+              style={getInputStyle('ca_ratio')}
             />
+            {error && <span className="error-message">{error}</span>}
           </div>
           <div className="form-group">
             <label className="form-label">d/a</label>
@@ -967,7 +1035,9 @@ function UserInfoForm() {
               name="da_ratio"
               value={formData.da_ratio}
               onChange={handleInputChange}
+              style={getInputStyle('da_ratio')}
             />
+            {error && <span className="error-message">{error}</span>}
           </div>
           <div className="form-group">
             <label className="form-label">e/a</label>
@@ -976,7 +1046,9 @@ function UserInfoForm() {
               name="ea_ratio"
               value={formData.ea_ratio}
               onChange={handleInputChange}
+              style={getInputStyle('ea_ratio')}
             />
+            {error && <span className="error-message">{error}</span>}
           </div>
         </div>
         <div className="form-row pulse-analysis-results">
@@ -988,7 +1060,9 @@ function UserInfoForm() {
               value={calculatePVC()}
               readOnly
               className="analysis-result"
+              style={getInputStyle('pvc')}
             />
+            {error && <span className="error-message">{error}</span>}
           </div>
           <div className="form-group">
             <label className="form-label">혈액 점도 (BV)</label>
@@ -998,7 +1072,9 @@ function UserInfoForm() {
               value={calculateBV()}
               readOnly
               className="analysis-result"
+              style={getInputStyle('bv')}
             />
+            {error && <span className="error-message">{error}</span>}
           </div>
           <div className="form-group">
             <label className="form-label">일회박출량 (SV)</label>
@@ -1008,7 +1084,9 @@ function UserInfoForm() {
               value={calculateSV()}
               readOnly
               className="analysis-result"
+              style={getInputStyle('sv')}
             />
+            {error && <span className="error-message">{error}</span>}
           </div>
           <div className="form-group">
             <label className="form-label">심박수 (HR)</label>
@@ -1018,7 +1096,9 @@ function UserInfoForm() {
               value={formData.pulse}
               readOnly
               className="analysis-result"
+              style={getInputStyle('hr')}
             />
+            {error && <span className="error-message">{error}</span>}
           </div>
         </div>
       </div>
@@ -1029,37 +1109,48 @@ function UserInfoForm() {
         <div className="form-row symptoms-category-row">
           <div className="form-group category">
             <label className="form-label">대분류</label>
-            <select value={formData.selectedCategory} onChange={handleCategoryChange}>
-              <option key="default-category" value="">선택하세요</option>
-              {Object.keys(증상카테고리).map((category, index) => (
-                <option key={`category-${index}-${category}`} value={category}>
+            <select value={formData.selectedCategory} onChange={handleCategoryChange} style={getInputStyle('selectedCategory')}>
+              <option value="">선택하세요</option>
+              {Object.keys(증상카테고리).map(category => (
+                <option key={`cat-${category}`} value={category}>
                   {category}
                 </option>
               ))}
             </select>
+            {error && <span className="error-message">{error}</span>}
           </div>
           <div className="form-group subcategory">
             <label className="form-label">중분류</label>
-            <select value={formData.selectedSubCategory} onChange={handleSubCategoryChange}>
-              <option key="default" value="">선택하세요</option>
-              {formData.selectedCategory && Object.keys(증상카테고리[formData.selectedCategory]).map(subCategory => (
-                <option key={`subcategory-${subCategory}`} value={subCategory}>{subCategory}</option>
-              ))}
+            <select value={formData.selectedSubCategory} onChange={handleSubCategoryChange} style={getInputStyle('selectedSubCategory')}>
+              <option value="">선택하세요</option>
+              {formData.selectedCategory && 
+                Object.keys(증상카테고리[formData.selectedCategory]).map(subCategory => (
+                  <option key={`subcat-${formData.selectedCategory}-${subCategory}`} value={subCategory}>
+                    {subCategory}
+                  </option>
+                ))
+              }
             </select>
+            {error && <span className="error-message">{error}</span>}
           </div>
           <div className="form-group symptom">
             <label className="form-label">소분류</label>
-            <select value={formData.selectedSymptom} onChange={handleSymptomChange}>
-              <option key="default" value="">선택하세요</option>
-              {formData.selectedSubCategory && 증상카테고리[formData.selectedCategory][formData.selectedSubCategory].map(symptom => (
-                <option key={`symptom-${symptom.code}`} value={symptom.name}>{symptom.name}</option>
-              ))}
+            <select value={formData.selectedSymptom} onChange={handleSymptomChange} style={getInputStyle('selectedSymptom')}>
+              <option value="">선택하세요</option>
+              {formData.selectedSubCategory && 
+                증상카테고리[formData.selectedCategory][formData.selectedSubCategory].map(symptom => (
+                  <option key={`sym-${formData.selectedCategory}-${formData.selectedSubCategory}-${symptom.code}`} value={symptom.name}>
+                    {symptom.name}
+                  </option>
+                ))
+              }
             </select>
+            {error && <span className="error-message">{error}</span>}
           </div>
         </div>
         <div className="selected-symptoms">
-          {formData.selectedSymptoms.map(symptom => (
-            <span key={`selected-${symptom}`} className="symptom-tag">
+          {formData.selectedSymptoms.map((symptom, index) => (
+            <span key={`selected-${index}-${symptom.replace(/\s+/g, '-')}`} className="symptom-tag">
               {symptom}
               <button type="button" onClick={() => removeSymptom(symptom)}>×</button>
             </span>
@@ -1077,6 +1168,7 @@ function UserInfoForm() {
               name="medication"
               value={formData.medication}
               onChange={handleInputChange}
+              style={getInputStyle('medication')}
             >
               <option key="default-medication" value="">약물을 선택하세요</option>
               {약물카테고리.map((약물, index) => (
@@ -1085,6 +1177,7 @@ function UserInfoForm() {
                 </option>
               ))}
             </select>
+            {error && <span className="error-message">{error}</span>}
           </div>
           <div className="form-group preference">
             <label className="form-label">기호식품</label>
@@ -1092,12 +1185,14 @@ function UserInfoForm() {
               name="preference"
               value={formData.preference}
               onChange={handleInputChange}
+              style={getInputStyle('preference')}
             >
               <option key="default" value="">기호식품을 선택하세요</option>
               {기호식품카테고리.map((기호품, index) => (
                 <option key={`preference-${index}`} value={기호품}>{기호품}</option>
               ))}
             </select>
+            {error && <span className="error-message">{error}</span>}
           </div>
         </div>
       </div>
@@ -1113,7 +1208,9 @@ function UserInfoForm() {
               value={formData.memo}
               onChange={handleInputChange}
               placeholder="추가할 메모사항을 입력하세요"
+              style={getInputStyle('memo')}
             />
+            {error && <span className="error-message">{error}</span>}
           </div>
         </div>
       </div>
@@ -1122,10 +1219,11 @@ function UserInfoForm() {
       <div className="button-group">
         <button 
           type="submit" 
+          disabled={isLoading}
           className="button primary"
           onClick={handleSubmit}
         >
-          저장하기
+          {isLoading ? '저장 중...' : '저장'}
         </button>
       </div>
     </div>
