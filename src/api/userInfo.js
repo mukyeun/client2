@@ -1,30 +1,31 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:8080';
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://server2-production-3c4c.up.railway.app';
 const STORAGE_KEY = 'ubioUserData';
 
-export const saveUserInfo = (userData) => {
+export const saveUserInfo = async (userData) => {
   try {
-    // 기존 데이터 불러오기
+    // 서버에 데이터 저장
+    const serverResponse = await axios.post(`${API_BASE_URL}/api/userinfo`, userData);
+    
+    // 기존 로컬 스토리지 로직 유지
     const existingData = localStorage.getItem(STORAGE_KEY);
     const dataArray = existingData ? JSON.parse(existingData) : [];
     
-    // 새 데이터 추가
     const newData = {
       ...userData,
-      _id: Date.now().toString(), // 고유 ID 생성
-      createdAt: new Date().toISOString() // 생성 시간 추가
+      _id: Date.now().toString(),
+      createdAt: new Date().toISOString()
     };
     
     dataArray.push(newData);
-    
-    // 로컬 스토리지에 저장
     localStorage.setItem(STORAGE_KEY, JSON.stringify(dataArray));
     console.log('데이터 저장됨:', newData);
     
     return {
       success: true,
-      data: newData
+      data: newData,
+      serverResponse: serverResponse.data
     };
   } catch (error) {
     console.error('데이터 저장 실패:', error);

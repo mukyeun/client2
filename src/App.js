@@ -3,6 +3,7 @@ import { Routes, Route, Link } from 'react-router-dom';
 import UserInfoForm from './components/UserInfoForm';
 import UserDataTable from './components/UserDataTable';
 import MainPage from './pages/MainPage';
+import SymptomSearchPage from './pages/SymptomSearchPage';
 import './App.css';
 import axios from 'axios';
 
@@ -82,12 +83,14 @@ function App() {
         <div className="nav-right">
           <Link to="/" className="nav-link">데이터 입력</Link>
           <Link to="/data" className="nav-link">데이터 조회</Link>
+          <Link to="/symptoms" className="nav-link">증상 검색</Link>
         </div>
       </nav>
       
       <Routes>
         <Route path="/" element={<MainPage />} />
         <Route path="/data" element={<UserDataTable />} />
+        <Route path="/symptoms" element={<SymptomSearchPage />} />
       </Routes>
     </div>
   );

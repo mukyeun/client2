@@ -16,7 +16,7 @@ const SimpleSearchBar = ({ onSearch }) => {
         type="text"
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
-        placeholder="이름으로 검색"
+        placeholder="증상을 검색하세요"
         className="search-input"
       />
       <button type="submit" className="search-button">검색</button>
