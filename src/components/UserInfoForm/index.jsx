@@ -1,5 +1,5 @@
-import React, { useState, useRef } from 'react';
-import { saveUserInfo } from '../../api/userInfo';
+import React, { useState, useRef, useEffect } from 'react';
+import { saveUserInfo, LOCAL_STORAGE_KEY } from '../../App';  // App.js의 saveUserInfo 함수 import
 import ExcelJS from 'exceljs';
 import { 증상카테고리 } from '../../data/symptoms';
 import { 약물카테고리 } from '../../data/medications';
@@ -31,7 +31,6 @@ const excelDateToJSDate = (excelDate) => {
 const processDateValue = (rawDate) => {
   try {
     if (!rawDate) return null;
-
     // 숫자형 Excel 날짜
     if (typeof rawDate === 'number') {
       const date = excelDateToJSDate(rawDate);
@@ -41,70 +40,155 @@ const processDateValue = (rawDate) => {
       });
       return date;
     }
-
     // 문자열 날짜
     const dateStr = rawDate.toString().trim();
     if (!dateStr) return null;
-
     const date = new Date(dateStr);
     if (isNaN(date.getTime())) {
       console.warn('유효하지 않은 날짜 문자열:', dateStr);
       return null;
     }
-
     console.log('문자열 날짜 변환:', {
       원본: dateStr,
       변환결과: date.toLocaleString()
     });
     return date;
-
   } catch (error) {
     console.error('날짜 처리 오류:', { rawDate, error });
     return null;
   }
 };
+// 초기 상태를 컴포넌트 외부에 정의
+const initialFormState = {
+  name: '',
+  residentNumber: '',
+  phone: '',
+  gender: '',
+  height: '',
+  weight: '',
+  bmi: '',
+  personality: '',
+  stress: '',
+  workIntensity: '',
+  pulse: '',
+  systolicBP: '',
+  diastolicBP: '',
+  ab_ms: '',
+  ac_ms: '',
+  ad_ms: '',
+  ae_ms: '',
+  ba_ratio: '',
+  ca_ratio: '',
+  da_ratio: '',
+  ea_ratio: '',
+  selectedCategory: '',
+  selectedSubCategory: '',
+  selectedSymptom: '',
+  selectedSymptoms: [],
+  medication: '',
+  preference: '',
+  memo: '',
+  pvc: '',
+  bv: '',
+  sv: '',
+  heartRate: ''
+};
+// 데이터 로딩 체크 함수
+const checkDataLoaded = () => {
+  const isLoaded = !!증상카테고리 && !!약물카테고리 && !!기호식품카테고리;
+  if (!isLoaded) {
+    console.error('필요한 데이터가 로드되지 않았습니다:', {
+      증상카테고리: !!증상카테고리,
+      약물카테고리: !!약물카테고리,
+      기호식품카테고리: !!기호식품카테고리
+    });
+  }
+  return isLoaded;
+};
+// 로컬 스토리지 키 상수 정의
+const USER_DATA_KEY = 'ubioUserData';
+// 로컬 스토리지 저장 함수
+const saveToLocalStorage = (data) => {
+  try {
+    const existingData = JSON.parse(localStorage.getItem(USER_DATA_KEY) || '[]');
+    const newData = {
+      ...data,
+      timestamp: new Date().toISOString() // 저장 시점 기록
+    };
+    
+    // 기존 데이터에 추가
+    existingData.push(newData);
+    localStorage.setItem(USER_DATA_KEY, JSON.stringify(existingData));
+    
+    console.log('데이터 저장 완료:', newData);
+    return true;
+  } catch (error) {
+    console.error('로컬 저장소 저장 실패:', error);
+    return false;
+  }
+};
+// 로컬 스토리지에서 데이터 불러오기 함수
+const loadFromLocalStorage = (userName) => {
+  try {
+    const allData = JSON.parse(localStorage.getItem(USER_DATA_KEY) || '[]');
+    
+    // 해당 사용자의 데이터만 필터링
+    const userData = allData
+      .filter(data => data.name === userName)
+      // 날짜순 정렬 (최신순)
+      .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+    return userData[0] || null; // 가장 최신 데이터 반환
+  } catch (error) {
+    console.error('로컬 저장소 불러오기 실패:', error);
+    return null;
+  }
+};
 // UserInfoForm 컴포넌트 정의
-function UserInfoForm() {
+const UserInfoForm = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [validationErrors, setValidationErrors] = useState({});
   const [error, setError] = useState(null);
-  const [isDataLoaded, setIsDataLoaded] = useState(false);
-  const [formData, setFormData] = useState({
-    name: '',
-    residentNumber: '',
-    phone: '',
-    personality: '',
-    height: '',
-    weight: '',
-    bmi: '',
-    gender: '',
-    stress: '',
-    workIntensity: '',
-    medication: '',
-    preference: '',
-    memo: '',
-    selectedCategory: '',
-    selectedSubCategory: '',
-    selectedSymptom: '',
-    selectedSymptoms: [],
-    pulse: '',
-    systolicBP: '',
-    diastolicBP: '',
-    ab_ms: '',
-    ac_ms: '',
-    ad_ms: '',
-    ae_ms: '',
-    ba_ratio: '',
-    ca_ratio: '',
-    da_ratio: '',
-    ea_ratio: '',
-    pvc: '',
-    bv: '',
-    sv: ''
-  });
+  const [formData, setFormData] = useState(initialFormState);
   const fileInputRef = useRef(null);
-  const STORAGE_KEY = 'ubioData';
+  const [dataAvailable, setDataAvailable] = useState(checkDataLoaded());
+
+  // useEffect를 조건부 렌더링 이전으로 이동
+  useEffect(() => {
+    const loadSavedData = () => {
+      try {
+        const savedData = localStorage.getItem(USER_DATA_KEY);
+        if (savedData) {
+          const parsedData = JSON.parse(savedData);
+          console.log('로드된 데이터:', parsedData);
+        }
+      } catch (error) {
+        console.error('데이터 로드 실패:', error);
+      }
+    };
+
+    loadSavedData();
+  }, []);
+
+  // useEffect에서 초기화 확인 메시지 제거
+  useEffect(() => {
+    // 컴포넌트 마운트 시 필요한 초기화 작업만 수행
+    const loadInitialData = () => {
+      try {
+        // 필요한 초기화 작업이 있다면 여기서 수행
+        console.log('폼 초기화 완료');
+      } catch (error) {
+        console.error('초기화 중 오류:', error);
+      }
+    };
+
+    loadInitialData();
+  }, []);
+
+  // 데이터가 로드되지 않았을 때의 렌더링
+  if (!dataAvailable) {
+    return <div>데이터 로딩 중...</div>;
+  }
   // BMI 자동 계산 함수
   const calculateBMI = (height, weight) => {
     if (height && weight) {
@@ -207,84 +291,62 @@ function UserInfoForm() {
       }));
     }
   };
-  // 초기 상태 값을 상수로 정의
-  const initialFormState = {
-    name: '',
-    residentNumber: '',
-    gender: 'male',
-    height: '',
-    weight: '',
-    personality: '',
-    stress: '',
-    workIntensity: '',
-    pulse: '',
-    systolicBP: '',
-    diastolicBP: '',
-    ab_ms: '',
-    ac_ms: '',
-    ad_ms: '',
-    ae_ms: '',
-    ba_ratio: '',
-    ca_ratio: '',
-    da_ratio: '',
-    ea_ratio: '',
-    selectedCategory: '',
-    selectedSubCategory: '',
-    selectedSymptom: '',
-    selectedSymptoms: [],
-    medication: '',
-    preference: '',
-    memo: '',
-    bmi: '',
-    pvc: '',
-    bv: '',
-    sv: '',
-    heartRate: ''
-  };
   // handleSubmit 함수 수정
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    // 유효성 검사
-    if (!validateForm()) {
-      return;
-    }
+    if (!validateForm()) return;
     
     try {
       setIsLoading(true);
       
-      // formData 확인
-      console.log('현재 formData:', formData);
+      // PVC, BV, SV 계산
+      const pvc = calculatePVC(formData);
+      const bv = calculateBV(formData);
+      const sv = calculateSV(formData);
+      const hr = formData.pulse; // HR은 pulse 값과 동일
       
-      // 모든 필드가 포함된 데이터 생성
-      const submitData = {
+      const newData = {
+        _id: Date.now().toString(),
+        createdAt: new Date().toISOString(),
         name: formData.name,
         residentNumber: formData.residentNumber,
-        gender: formData.gender || 'male',
+        gender: formData.gender,
         height: formData.height,
         weight: formData.weight,
+        bmi: formData.bmi,
+        pulse: formData.pulse,
+        systolicBP: formData.systolicBP,
+        diastolicBP: formData.diastolicBP,
         ab_ms: formData.ab_ms,
         ac_ms: formData.ac_ms,
         ad_ms: formData.ad_ms,
         ae_ms: formData.ae_ms,
-        ba_ratio: formData.ba_ratio
+        ba_ratio: formData.ba_ratio,
+        ca_ratio: formData.ca_ratio,
+        da_ratio: formData.da_ratio,
+        ea_ratio: formData.ea_ratio,
+        // 계산된 값들 추가
+        pvc: pvc,
+        bv: bv,
+        sv: sv,
+        hr: hr,
+        symptoms: formData.selectedSymptoms,
+        medication: formData.medication,
+        preference: formData.preference,
+        memo: formData.memo
       };
+
+      const currentData = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY) || '[]');
+      currentData.push(newData);
+      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(currentData));
       
-      console.log('저장할 데이터:', submitData);
+      setFormData(initialFormState);
+      navigate('/data-view');
       
-      const response = await saveUserInfo(submitData);
-      console.log('저장 응답:', response);
-      
-      if (response.success) {
-        alert('데이터가 성공적으로 저장되었습니다.');
-        setFormData({...initialFormState});
-        window.location.reload();
-      } else {
-        alert('데이터 저장에 실패했습니다.');
-      }
     } catch (error) {
-      console.error('저장 중 오류 발생:', error);
-      alert('오류가 발생했습니다.');
+      console.error('저장 오류:', error);
+      alert('저장 중 오류가 발생했습니다.');
     } finally {
       setIsLoading(false);
     }
@@ -316,7 +378,6 @@ function UserInfoForm() {
       });
       
       return date;
-
     } catch (error) {
       console.error('날짜 변환 실패:', { dateValue, error });
       return null;
@@ -344,51 +405,26 @@ function UserInfoForm() {
   };
   const getLatestData = (rows, userName) => {
     try {
-      console.log('데이터 처리 시작:', {
-        전체행수: rows.length,
-        사용자: userName
-      });
-
-      // 헤더 제외, 이름으로 필터링
-      const filteredRows = rows.slice(1).filter(row => {
-        if (!Array.isArray(row)) return false;
+      console.log('전체 데이터:', rows); // 디버깅
+      if (!Array.isArray(rows) || rows.length < 2) {
+        throw new Error('데이터가 없거나 형식이 잘못되었습니다.');
+      }
+      // 헤더를 제외한 실제 데이터 행들
+      const dataRows = rows.slice(1);
+      
+      // 해당 사용자의 데이터만 필터링
+      const userRows = dataRows.filter(row => {
         const rowName = row[0]?.toString().trim();
-        return rowName === userName;
+        const matches = rowName === userName;
+        console.log('행 검사:', { 행이름: rowName, 검색이름: userName, 일치: matches });
+        return matches;
       });
-
-      console.log('이름으로 필터링된 행:', filteredRows);
-
-      if (filteredRows.length === 0) {
-        throw new Error(`'${userName}' 사용자의 데이터가 없습니다.`);
+      console.log('사용자 데이터:', userRows); // 디버깅
+      if (userRows.length === 0) {
+        throw new Error(`${userName}님의 데이터를 찾을 수 없습니다.`);
       }
-
-      // 날짜 변환 및 정렬
-      const rowsWithDates = filteredRows
-        .map(row => {
-          const date = parseExcelDate(row[5]);
-          if (!date || isNaN(date.getTime())) {
-            console.warn('유효하지 않은 날짜:', row[5]);
-            return null;
-          }
-          return { row, date, timestamp: date.getTime() };
-        })
-        .filter(item => item !== null)
-        .sort((a, b) => b.timestamp - a.timestamp);
-
-      console.log('날짜로 정렬된 데이터:', 
-        rowsWithDates.map(({ date, row }) => ({
-          날짜: date.toLocaleString(),
-          원본날짜: row[5],
-          이름: row[0]
-        }))
-      );
-
-      if (rowsWithDates.length === 0) {
-        throw new Error('유효한 날짜가 있는 데이터가 없습니다.');
-      }
-
-      return rowsWithDates[0].row;
-
+      // 가장 최근 데이터 반환
+      return userRows[0];
     } catch (error) {
       console.error('데이터 처리 오류:', error);
       throw error;
@@ -420,14 +456,12 @@ function UserInfoForm() {
       console.error('유효하지 않은 데이터 구조:', rows);
       return false;
     }
-
     // 헤더 검증
     const headers = rows[0];
     if (!Array.isArray(headers) || headers.length < 17) {
       console.error('유효하지 않은 헤더:', headers);
       return false;
     }
-
     // 데이터 행 검증
     const dataRows = rows.slice(1);
     const validRows = dataRows.filter(row => {
@@ -438,16 +472,13 @@ function UserInfoForm() {
       const hasValues = row.slice(9, 17).some(val => 
         val != null && val.toString().trim() !== ''
       );
-
       return hasName && hasDate && hasValues;
     });
-
     console.log('데이터 검증 결과:', {
       전체행수: rows.length,
       유효행수: validRows.length,
       헤더: headers
     });
-
     return validRows.length > 0;
   };
   // 데이터 필드 검증
@@ -458,30 +489,31 @@ function UserInfoForm() {
   // 데이터 매핑 함수
   const mapExcelData = (data) => {
     try {
+      // 데이터 검증
+      if (!Array.isArray(data) || data.length < 17) {
+        throw new Error('유효하지 않은 데이터 형식입니다.');
+      }
       const mappedData = {
-        ab_ms: validateField(data[9]),
-        ac_ms: validateField(data[10]),
-        ad_ms: validateField(data[11]),
-        ae_ms: validateField(data[12]),
-        ba_ratio: validateField(data[13]),
-        ca_ratio: validateField(data[14]),
-        da_ratio: validateField(data[15]),
-        ea_ratio: validateField(data[16])
+        ab_ms: data[9]?.toString() || '',
+        ac_ms: data[10]?.toString() || '',
+        ad_ms: data[11]?.toString() || '',
+        ae_ms: data[12]?.toString() || '',
+        ba_ratio: data[13]?.toString() || '',
+        ca_ratio: data[14]?.toString() || '',
+        da_ratio: data[15]?.toString() || '',
+        ea_ratio: data[16]?.toString() || ''
       };
-
-      // 데이터 유효성 사사
+      // 데이터 유효성 검사
       const hasValidData = Object.values(mappedData).some(value => 
         value !== '' && !isNaN(parseFloat(value))
       );
-
       if (!hasValidData) {
         throw new Error('유효한 맥파 데이터가 없습니다.');
       }
-
       return mappedData;
     } catch (error) {
       console.error('데이터 매핑 오류:', error);
-      throw new Error('데이터 형식이 올바르지 않습니다.');
+      throw error;
     }
   };
   // 파일 선택 버튼 클릭 핸들러
@@ -490,55 +522,122 @@ function UserInfoForm() {
       fileInputRef.current.click();
     }
   };
-  // 파일 선택 핸들러
+  // 맥파 데이터만 리셋하는 함수
+  const resetPulseData = () => {
+    setFormData(prev => ({
+      ...prev,
+      ab_ms: '',
+      ac_ms: '',
+      ad_ms: '',
+      ae_ms: '',
+      ba_ratio: '',
+      ca_ratio: '',
+      da_ratio: '',
+      ea_ratio: ''
+    }));
+  };
+  // 데이터 유효성 검사 함수
+  const validatePulseData = (data) => {
+    if (!Array.isArray(data)) return false;
+    
+    // 모든 필드가 숫자나 빈 문자열인지 확인
+    const isValidFormat = Object.values(data).every(value => 
+      value === '' || (!isNaN(parseFloat(value)) && isFinite(value))
+    );
+    if (!isValidFormat) return false;
+    // 최소한 하나의 유효한 값이 있는지 확인
+    const hasValidValue = Object.values(data).some(value => 
+      value !== '' && !isNaN(parseFloat(value))
+    );
+    return hasValidValue;
+  };
+  // 유비오 맥파 데이터 컬럼 매핑
+  const UBIO_COLUMNS = {
+    NAME: 'A',           // 이름 컬럼
+    DATE: 'F',          // 측정일시 컬럼
+    WAVE_DATA: {
+      'J': 'ab_ms',     // a-b
+      'K': 'ac_ms',     // a-c
+      'L': 'ad_ms',     // a-d
+      'M': 'ae_ms',     // a-e
+      'N': 'ba_ratio',  // b/a
+      'O': 'ca_ratio',  // c/a
+      'P': 'da_ratio',  // d/a
+      'Q': 'ea_ratio'   // e/a
+    }
+  };
+  // 파일 선택 핸들러 수정
   const handleFileSelect = async (event) => {
     try {
-      const file = event.target.files?.[0];
-      if (!file) {
-        throw new Error('파일을 선택해주세요.');
-      }
-
-      const userName = formData.name?.trim();
-      if (!userName) {
+      if (!formData.name) {
         throw new Error('먼저 이름을 입력해주세요.');
       }
-
-      setIsLoading(true);
-
-      const buffer = await file.arrayBuffer();
-      const workbook = read(buffer);
-      const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-      
-      const data = utils.sheet_to_json(worksheet, { 
-        header: 1,
-        raw: false
-      });
-
-      // 데이터 매핑
-      const mappedData = {
-        ab_ms: '91',
-        ac_ms: '182',
-        ad_ms: '184',
-        ae_ms: '259',
-        ba_ratio: '-0.88',
-        ca_ratio: data[0]?.ca_ratio || '',
-        da_ratio: data[0]?.da_ratio || '',
-        ea_ratio: data[0]?.ea_ratio || ''
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        try {
+          const workbook = read(e.target.result, { type: 'array' });
+          const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+          const rows = utils.sheet_to_json(firstSheet, { header: 1 });
+          // 데이터 검증
+          if (!rows || rows.length < 2) {
+            throw new Error('유효하지 않은 데이터 형식입니다.');
+          }
+          // 사용자 이름으로 데이터 필터링
+          const userName = formData.name.trim();
+          const userRows = rows.slice(1).filter(row => {
+            const rowName = row[0]?.toString().trim();
+            return rowName === userName;
+          });
+          if (userRows.length === 0) {
+            throw new Error(`${userName}님의 데이터를 찾을 수 없습니다.`);
+          }
+          // 날짜순 정렬 및 최신 데이터 선택
+          const latestRow = userRows.sort((a, b) => {
+            const dateA = new Date(a[5]); // F열 (측정일시)
+            const dateB = new Date(b[5]);
+            return dateB - dateA;
+          })[0];
+          // 맥파 데이터 매핑
+          const waveData = {
+            ab_ms: latestRow[9]?.toString() || '',    // J열
+            ac_ms: latestRow[10]?.toString() || '',   // K열
+            ad_ms: latestRow[11]?.toString() || '',   // L열
+            ae_ms: latestRow[12]?.toString() || '',   // M열
+            ba_ratio: latestRow[13]?.toString() || '', // N열
+            ca_ratio: latestRow[14]?.toString() || '', // O열
+            da_ratio: latestRow[15]?.toString() || '', // P열
+            ea_ratio: latestRow[16]?.toString() || ''  // Q열
+          };
+          // 데이터 유효성 검사
+          const hasValidData = Object.values(waveData).some(value => 
+            value !== '' && !isNaN(parseFloat(value))
+          );
+          if (!hasValidData) {
+            throw new Error('유효한 맥파 데이터가 없습니다.');
+          }
+          // 폼 데이터 업��이트
+          setFormData(prev => ({
+            ...prev,
+            ...waveData,
+            // PVC, BV, SV는 자동으로 계산됨 (기존 계산 함수 사용)
+            measurementDate: new Date(latestRow[5]).toLocaleString() // 측정일시 저장
+          }));
+          alert(`${userName}님의 최신 맥파 데이터가 로드되었습니다.\n측정일시: ${new Date(latestRow[5]).toLocaleString()}`);
+        } catch (error) {
+          console.error('데이터 처리 오류:', error);
+          alert(error.message);
+        }
       };
-
-      // 폼 데이터 업데이트
-      setFormData(prev => ({
-        ...prev,
-        ...mappedData
-      }));
-
-      setIsDataLoaded(true);
-
+      reader.readAsArrayBuffer(file);
     } catch (error) {
       console.error('파일 처리 오류:', error);
       alert(error.message);
     } finally {
-      setIsLoading(false);
+      if (event?.target) {
+        event.target.value = '';
+      }
     }
   };
   // 날짜 파싱 캐시 추가
@@ -564,14 +663,12 @@ function UserInfoForm() {
     if (!formData.name?.trim()) {
       throw new Error('이름을 입력해주세요.');
     }
-
     const requiredFields = ['ab_ms', 'ac_ms', 'ad_ms', 'ae_ms', 'ba_ratio', 'ca_ratio', 'da_ratio', 'ea_ratio'];
     const missingFields = requiredFields.filter(field => !formData[field]?.trim());
     
     if (missingFields.length > 0) {
       throw new Error('맥파 데이터 먼 가져오세요.');
     }
-
     return true;
   };
   // 날짜 문자열을 Date 객체로 변환하는 함수
@@ -584,50 +681,45 @@ function UserInfoForm() {
       const [datePart, timePart = '00:00'] = str.split(' ');
       
       if (!datePart) return null;
-
       // YY-MM-DD 형식 처리
       const [year, month, day] = datePart.split('-').map(Number);
       const [hour, minute] = timePart.split(':').map(Number);
-
       if (!year || !month || !day) {
         console.warn('잘못된 날짜 형식:', dateStr);
         return null;
       }
-
       // 2000년대로 변환
       const fullYear = year < 100 ? 2000 + year : year;
       const date = new Date(fullYear, month - 1, day, hour || 0, minute || 0);
-
       return date;
-
     } catch (error) {
       console.error('날짜 파싱 오류:', { dateStr, error });
       return null;
     }
   };
-
-  // 말초혈관 수축도 계산
-  const calculatePVC = () => {
-    const ba = parseFloat(formData.ba_ratio) || 0;
-    const da = parseFloat(formData.da_ratio) || 0;
-    const ae = parseFloat(formData.ae_ms) || 0;
-    return (0.35 * Math.abs(ba) + 0.25 * Math.abs(da) + 0.4 * ae).toFixed(2);
+  // 계산 함수들
+  const calculatePVC = (data) => {
+    const ba = parseFloat(data.ba_ratio) || 0;
+    const ca = parseFloat(data.ca_ratio) || 0;
+    const da = parseFloat(data.da_ratio) || 0;
+    const ea = parseFloat(data.ea_ratio) || 0;
+    
+    return ((ba + ca + da + ea) / 4).toFixed(2);
   };
-
-  // 혈액 점도 계산
-  const calculateBV = () => {
-    const ca = parseFloat(formData.ca_ratio) || 0;
-    const cd = Math.abs(parseFloat(formData.ac_ms) - parseFloat(formData.ad_ms)) || 0;
-    return (0.6 * Math.abs(ca) + 0.4 * cd).toFixed(2);
+  const calculateBV = (data) => {
+    const ab = parseFloat(data.ab_ms) || 0;
+    const ac = parseFloat(data.ac_ms) || 0;
+    const ad = parseFloat(data.ad_ms) || 0;
+    const ae = parseFloat(data.ae_ms) || 0;
+    
+    return ((ab + ac + ad + ae) / 4).toFixed(2);
   };
-
-  // 일회박출량 계산
-  const calculateSV = () => {
-    const da = parseFloat(formData.da_ratio) || 0;
-    const ae = parseFloat(formData.ae_ms) || 0;
-    return (0.65 * Math.abs(da) + 0.35 * Math.abs(ae)).toFixed(2);
+  const calculateSV = (data) => {
+    const pvc = calculatePVC(data);
+    const bv = calculateBV(data);
+    
+    return ((parseFloat(pvc) + parseFloat(bv)) / 2).toFixed(2);
   };
-
   // resetForm 함수 추가
   const resetForm = () => {
     setFormData({
@@ -657,77 +749,17 @@ function UserInfoForm() {
       selectedSymptoms: [],
       medication: '',
       preference: '',
-      memo: ''
+      memo: '',
+      pvc: '',
+      bv: '',
+      sv: '',
+      heartRate: ''
     });
   };
-
-  // xlsx 관련 코드를 exportUtils 사용하도록 변경
-  const handleFileUpload = async (event) => {
-    const file = event.target.files[0];
-    if (!file) return;
-
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      const workbook = new ExcelJS.Workbook();
-      await workbook.xlsx.load(await file.arrayBuffer());
-      const worksheet = workbook.getWorksheet(1);
-      
-      if (!worksheet) {
-        throw new Error('워크시트를 찾을 수 없습니다.');
-      }
-
-      const rows = [];
-      worksheet.eachRow((row) => {
-        rows.push(row.values);
-      });
-
-      if (rows.length < 2) {
-        throw new Error('데이터가 없습니다.');
-      }
-
-      // 데이터 처리 로직
-      const userName = formData.name?.toString().trim();
-      if (!userName) {
-        throw new Error('먼저 이름을 입력해주세요.');
-      }
-
-      const latestData = getLatestData(rows, userName);
-      if (latestData) {
-        updateFormWithExcelData(latestData);
-        setIsDataLoaded(true);
-      }
-
-    } catch (error) {
-      console.error('파일 처리 오류:', error);
-      setError(error.message || '파일 처리 중 오류가 발생했습니다.');
-      clearFileInput();
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // updateFormWithExcelData 함수 추가
-  const updateFormWithExcelData = (data) => {
-    setFormData(prev => ({
-      ...prev,
-      ab_ms: data[9] || '',
-      ac_ms: data[10] || '',
-      ad_ms: data[11] || '',
-      ae_ms: data[12] || '',
-      ba_ratio: data[13] || '',
-      ca_ratio: data[14] || '',
-      da_ratio: data[15] || '',
-      ea_ratio: data[16] || ''
-    }));
-  };
-
   // validateForm 함수 수정
   const validateForm = () => {
     const newErrors = {};
     let isValid = true;
-
     // 필수 필드 검사
     if (!formData.name?.trim()) {
       newErrors.name = '이름을 입력해주세요';
@@ -745,16 +777,159 @@ function UserInfoForm() {
       newErrors.weight = '체중을 입력해주세요';
       isValid = false;
     }
-
     setValidationErrors(newErrors);
     return isValid;
   };
-
   // 입력 필드에 에러 메시지 표시를 위한 스타일 추가
   const getInputStyle = (fieldName) => ({
     borderColor: validationErrors[fieldName] ? 'red' : undefined
   });
-
+  // formatDate 함수 추가
+  const formatDate = (date) => {
+    if (!date) return '';
+    
+    try {
+      if (typeof date === 'number') {
+        // Excel 날짜 처리
+        const EXCEL_EPOCH = new Date(Date.UTC(1899, 11, 30));
+        const dateObj = new Date(EXCEL_EPOCH.getTime() + (date - 1) * 86400000);
+        return dateObj.toLocaleString('ko-KR', {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit'
+        });
+      }
+      
+      const dateObj = new Date(date);
+      if (isNaN(dateObj.getTime())) return '';
+      
+      return dateObj.toLocaleString('ko-KR', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+      });
+    } catch (error) {
+      console.error('날짜 형 변환 오류:', error);
+      return '';
+    }
+  };
+  // DataTable 컴포넌트
+  const DataTable = ({ data }) => {
+    if (!data) return null;
+    return (
+      <div className="table-container">
+        <table className="table">
+          <thead>
+            <tr>
+              <th>측정일시</th>
+              <th>이름</th>
+              <th>주민등록번호</th>
+              <th>성별</th>
+              <th>성격</th>
+              <th>스트레스</th>
+              <th>노동강도</th>
+              <th>신장</th>
+              <th>체중</th>
+              <th>BMI지수</th>
+              <th>맥박</th>
+              <th>수축기혈압</th>
+              <th>이완기혈압</th>
+              <th>a-b</th>
+              <th>a-c</th>
+              <th>a-d</th>
+              <th>a-e</th>
+              <th>b/a</th>
+              <th>c/a</th>
+              <th>d/a</th>
+              <th>e/a</th>
+              <th>pvc</th>
+              <th>bv</th>
+              <th>sv</th>
+              <th>hr</th>
+              <th>증상</th>
+              <th>복용약물</th>
+              <th>기호식품</th>
+              <th>메모</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><input type="text" name="name" /></td>
+              <td><input type="text" name="residentNumber" /></td>
+              <td>
+                <select name="gender">
+                  <option value="">선택</option>
+                  <option value="male">남성</option>
+                  <option value="female">여성</option>
+                </select>
+              </td>
+              <td><input type="text" name="personality" /></td>
+              <td>
+                <select name="stress">
+                  <option value="">선택</option>
+                  <option value="low">낮음</option>
+                  <option value="medium">보통</option>
+                  <option value="high">높음</option>
+                </select>
+              </td>
+              <td>
+                <select name="workIntensity">
+                  <option value="">선택하세요</option>
+                  <option value="low">낮음</option>
+                  <option value="medium">보통</option>
+                  <option value="high">높음</option>
+                </select>
+              </td>
+              <td><input type="number" name="height" /></td>
+              <td><input type="number" name="weight" /></td>
+              <td><input type="text" name="bmi" /></td>
+              <td><input type="text" name="pulse" /></td>
+              <td><input type="text" name="systolicBP" /></td>
+              <td><input type="text" name="diastolicBP" /></td>
+              <td><input type="text" name="ab_ms" /></td>
+              <td><input type="text" name="ac_ms" /></td>
+              <td><input type="text" name="ad_ms" /></td>
+              <td><input type="text" name="ae_ms" /></td>
+              <td><input type="text" name="ba_ratio" /></td>
+              <td><input type="text" name="ca_ratio" /></td>
+              <td><input type="text" name="da_ratio" /></td>
+              <td><input type="text" name="ea_ratio" /></td>
+              <td><input type="text" name="pvc" /></td>
+              <td><input type="text" name="bv" /></td>
+              <td><input type="text" name="sv" /></td>
+              <td><input type="text" name="hr" /></td>
+              <td><input type="text" name="symptoms" /></td>
+              <td>
+                <select name="medication">
+                  <option value="">선택</option>
+                  {약물카테고리.map((약물, index) => (
+                    <option key={`medication-${index}-${약물}`} value={약물}>
+                      {약물}
+                    </option>
+                  ))}
+                </select>
+              </td>
+              <td>
+                <select name="preference">
+                  <option value="">선택</option>
+                  {기호식품카테고리.map((기호품, index) => (
+                    <option key={`preference-${index}`} value={기호품}>{기호품}</option>
+                  ))}
+                </select>
+              </td>
+              <td><textarea name="memo" /></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    );
+  };
   return (
     <div className="form-container">
       {/* 기본 정보 섹션 */}
@@ -893,7 +1068,6 @@ function UserInfoForm() {
           </div>
         </div>
       </div>
-
       {/* 맥박 분석 섹션 */}
       <div className="form-section pulse-section">
         <h2 className="section-title">맥박 분석</h2>
@@ -936,7 +1110,6 @@ function UserInfoForm() {
           </div>
         </div>
       </div>
-
       {/* 맥파 분석 섹션 */}
       <div className="form-section pulse-section">
         <h2 className="section-title">맥파분석</h2>
@@ -952,9 +1125,9 @@ function UserInfoForm() {
             <button 
               className="button secondary"
               onClick={handleFileButtonClick}
-              disabled={isLoading || !formData.name}
+              disabled={isLoading}
             >
-              {isLoading ? '데이터 불러오는 중...' : '데이터 가져오기'}
+              유비오 맥파 데이터 가져오기
             </button>
             {error && <span className="error-message">{error}</span>}
           </div>
@@ -1057,7 +1230,7 @@ function UserInfoForm() {
             <input
               type="text"
               name="pvc"
-              value={calculatePVC()}
+              value={calculatePVC(formData)}
               readOnly
               className="analysis-result"
               style={getInputStyle('pvc')}
@@ -1069,7 +1242,7 @@ function UserInfoForm() {
             <input
               type="text"
               name="bv"
-              value={calculateBV()}
+              value={calculateBV(formData)}
               readOnly
               className="analysis-result"
               style={getInputStyle('bv')}
@@ -1081,7 +1254,7 @@ function UserInfoForm() {
             <input
               type="text"
               name="sv"
-              value={calculateSV()}
+              value={calculateSV(formData)}
               readOnly
               className="analysis-result"
               style={getInputStyle('sv')}
@@ -1102,7 +1275,6 @@ function UserInfoForm() {
           </div>
         </div>
       </div>
-
       {/* 증상 선택 섹션 */}
       <div className="form-section symptoms-section">
         <h2 className="section-title">증상 선택</h2>
@@ -1139,7 +1311,10 @@ function UserInfoForm() {
               <option value="">선택하세요</option>
               {formData.selectedSubCategory && 
                 증상카테고리[formData.selectedCategory][formData.selectedSubCategory].map(symptom => (
-                  <option key={`sym-${formData.selectedCategory}-${formData.selectedSubCategory}-${symptom.code}`} value={symptom.name}>
+                  <option 
+                    key={`sym-${formData.selectedCategory}-${formData.selectedSubCategory}-${symptom.name}`} 
+                    value={symptom.name}
+                  >
                     {symptom.name}
                   </option>
                 ))
@@ -1157,7 +1332,6 @@ function UserInfoForm() {
           ))}
         </div>
       </div>
-
       {/* 복용약물 섹션 */}
       <div className="form-section medication-section">
         <h2 className="section-title">복용약물</h2>
@@ -1196,7 +1370,6 @@ function UserInfoForm() {
           </div>
         </div>
       </div>
-
       {/* 메모 섹션 */}
       <div className="form-section memo-section">
         <h2 className="section-title">메모</h2>
@@ -1214,7 +1387,6 @@ function UserInfoForm() {
           </div>
         </div>
       </div>
-
       {/* 버튼 그룹 */}
       <div className="button-group">
         <button 

@@ -5,10 +5,11 @@
 
 .data-header {
   display: flex;
-  justify-content: flex-end;
+  justify-content: flex-start;
   gap: 8px;
   align-items: center;
-  margin-bottom: 16px;
+  margin: 20px 0;
+  padding: 8px;
 }
 
 .data-header h2 {
@@ -534,7 +535,7 @@ input[type="checkbox"] {
   height: 16px;
 }
 
-/* 체크박스 셀 */
+/* ��크박스 셀 */
 td:first-child,
 th:first-child {
   width: 16px;
@@ -800,50 +801,90 @@ th:first-child {
 /* 버튼 컨테이너 */
 .data-header {
   display: flex;
-  justify-content: flex-end;
+  justify-content: flex-start;
   gap: 8px;
   align-items: center;
-  margin-bottom: 16px;
+  margin: 20px 0;
+  padding: 8px;
 }
 
-/* 모든 버튼 공통 스타일 (export-button, backup-button, restore-button 포함) */
+/* 모든 버튼에 대한 공통 스타일 */
 .data-header button,
+.button,
 .export-button,
 .backup-button,
-.restore-button {
-  height: 32px;
-  line-height: 32px;
-  padding: 0 12px;
-  font-size: 13px;
+.restore-button,
+.excel-button,
+.csv-button {
+  height: 32px !important;
+  line-height: 32px !important;
+  padding: 0 16px;
+  font-size: 14px;
+  font-weight: normal;
   border: none;
   border-radius: 4px;
-  color: #fff;
+  color: white;
   cursor: pointer;
+  transition: background-color 0.2s;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* 새로 등록 버튼 */
+.button.primary {
+  background-color: #4a6ee0;
+}
+
+.button.primary:hover {
+  background-color: #3d5cbe;
+}
+
+/* Excel 관련 버튼 */
+.button.secondary,
+.excel-button {
+  background-color: #4aa564;
+}
+
+.button.secondary:hover,
+.excel-button:hover {
+  background-color: #3d8b53;
+}
+
+/* CSV 버튼 */
+.csv-button {
+  background-color: #666666;
+}
+
+.csv-button:hover {
+  background-color: #555555;
+}
+
+/* 삭제 버튼 */
+.button.warning {
+  background-color: #d9534f;
+}
+
+.button.warning:hover {
+  background-color: #c9302c;
 }
 
 /* 새로고침 버튼 */
-button.refresh-button {
-  background-color: #228be6;
+.button.info {
+  background-color: #5bc0de;
 }
 
-/* Excel 내보내기 버튼 */
-button.excel {
-  background-color: #2f9e44;
+.button.info:hover {
+  background-color: #46b8da;
 }
 
-/* CSV 내보내기 버튼 */
-button.csv {
-  background-color: #495057;
+/* 엑셀 업로드 버튼 */
+.button.upload {
+  background-color: #4aa564;
 }
 
-/* 백업 버튼 */
-button.backup-button {
-  background-color: #2f9e44;
-}
-
-/* 복원 버튼 */
-button.restore-button {
-  background-color: #228be6;
+.button.upload:hover {
+  background-color: #3d8b53;
 }
 
 /* 키보드 포커스 스타일 */
@@ -1109,4 +1150,17 @@ button.restore-button {
   outline: none;
   border-color: #4a90e2;
   box-shadow: 0 0 3px rgba(74, 144, 226, 0.3);
+}
+
+/* 모바일 반응형 */
+@media screen and (max-width: 768px) {
+  .data-header {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  
+  .data-header button {
+    flex: 1;
+    min-width: calc(50% - 4px);
+  }
 }

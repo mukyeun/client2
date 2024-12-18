@@ -1,20 +1,37 @@
-// 로컬 스토리지 관리 유틸리티
+// localStorage 유틸리티 함수
 export const saveData = (key, data) => {
-    try {
-      localStorage.setItem(key, JSON.stringify(data));
-      return true;
-    } catch (error) {
-      console.error('저장 실패:', error);
-      return false;
+  try {
+    localStorage.setItem(key, JSON.stringify(data));
+    return true;
+  } catch (error) {
+    console.error('localStorage 저장 실패:', error);
+    return false;
+  }
+};
+
+export const loadData = (key) => {
+  try {
+    const item = localStorage.getItem(key);
+    // 데이터가 없으면 null 반환
+    if (!item) return null;
+    
+    return JSON.parse(item);
+  } catch (error) {
+    console.error('localStorage 로드 실패:', error);
+    return null;
+  }
+};
+
+export const clearData = (key) => {
+  try {
+    if (key) {
+      localStorage.removeItem(key);
+    } else {
+      localStorage.clear();
     }
-  };
-  
-  export const loadData = (key) => {
-    try {
-      const data = localStorage.getItem(key);
-      return data ? JSON.parse(data) : null;
-    } catch (error) {
-      console.error('로드 실패:', error);
-      return null;
-    }
-  };
+    return true;
+  } catch (error) {
+    console.error('localStorage 삭제 실패:', error);
+    return false;
+  }
+};

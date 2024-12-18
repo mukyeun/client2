@@ -3,17 +3,22 @@ import axios from 'axios';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://server2-production-3c4c.up.railway.app';
 
-export class DataService {
-  static async saveUserData(userData) {
-    try {
-      // 서버에 데이터 저장
-      const serverResponse = await axios.post(`${API_BASE_URL}/api/userinfo`, userData);
-      
-      // 로컬 스토리지에도 저장
-      const existingData = loadData('userData') || [];
-      const updatedData = [...existingData, userData];
-      saveData('userData', updatedData);
+// localStorage 초기화 함수
+const clearLocalStorage = () => {
+  try {
+    localStorage.removeItem('userData');
+    return true;
+  } catch (error) {
+    console.error('localStorage 초기화 실패:', error);
+    return false;
+  }
+};
 
+class DataServiceClass {
+  async saveUserData(userData) {
+    try {
+      const serverResponse = await axios.post(`${API_BASE_URL}/api/userinfo`, userData);
+      saveData('userData', [userData]);
       return {
         success: true,
         data: userData,
@@ -28,25 +33,34 @@ export class DataService {
     }
   }
 
-  static async getUserData() {
+  async getUserData() {
     try {
-      // 서버에서 데이터 가져오기
       const serverResponse = await axios.get(`${API_BASE_URL}/api/userinfo`);
-      
-      // 로컬 데이터도 유지
-      const localData = loadData('userData') || [];
-      
-      return serverResponse.data.data;
+      if (serverResponse.data && serverResponse.data.data) {
+        saveData('userData', serverResponse.data.data);
+        return serverResponse.data.data;
+      }
+      return [];
     } catch (error) {
       console.error('데이터 로드 실패:', error);
-      return loadData('userData') || []; // 서버 실패시 로컬 데이터 반환
+      const localData = loadData('userData');
+      return Array.isArray(localData) ? localData : [];
     }
   }
 
-  static async getLatestUserData(userName) {
+  async getLatestUserData(userName) {
     const allData = await this.getUserData();
+    if (!Array.isArray(allData)) return null;
+    
     return allData
-      .filter(data => data.name === userName)
-      .sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+      .filter(data => data && data.name === userName)
+      .sort((a, b) => new Date(b.date) - new Date(a.date))[0] || null;
+  }
+
+  clearLocalData() {
+    return clearLocalStorage();
   }
 }
+
+// 싱글톤 인스턴스 생성 및 export
+export const DataService = new DataServiceClass();
